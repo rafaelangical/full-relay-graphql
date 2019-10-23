@@ -1,1 +1,4 @@
-export { default as User } from '../modules/user/UserModel';
+import User from '../modules/user/UserModel';
+import Product from '../modules/product/ProductModel';
+
+export { User, Product };
