@@ -21,24 +21,29 @@ yarn start:server
 ### Run App Package
 We recommend that you read https://facebook.github.io/react-native/docs/getting-started before starting
 ```
-
 cd app/
 ```
+install dependencies
 
+```
 yarn install
 ```
 
 Compile Relay
-```
 
+```
 yarn relay:app
 ```
 
 Start Package
 ```
 
+```
 yarn start:app
 ```
 
+Run on device or simulator
+
+```
 yarn android or ios
 ```
