@@ -36,7 +36,6 @@ yarn relay:app
 ```
 
 Start Package
-```
 
 ```
 yarn start:app
