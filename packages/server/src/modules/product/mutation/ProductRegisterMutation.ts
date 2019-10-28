@@ -48,10 +48,10 @@ export default mutationWithClientMutationId({
 		return product;
 	},
 	outputFields: {
-		// product: {
-		// 	type: GraphQLObjectType,
-		// 	resolve: ({ product }) => product.name
-		// },
+		ok: {
+			type: GraphQLString,
+			resolve: ({ name }) => name
+		},
 		error: {
 			type: GraphQLString,
 			resolve: ({ error }) => error

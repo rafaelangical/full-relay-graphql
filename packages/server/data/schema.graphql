@@ -2,7 +2,7 @@ type Mutation {
   UserChangePassword(input: UserChangePasswordInput!): UserChangePasswordPayload
   UserLoginWithEmail(input: UserLoginWithEmailInput!): UserLoginWithEmailPayload
   UserRegisterWithEmail(input: UserRegisterWithEmailInput!): UserRegisterWithEmailPayload
-  ProductRegisterMutation(input: ProductRegisterInput!): ProductRegisterPayload
+  ProductRegister(input: ProductRegisterInput!): ProductRegisterPayload
 }
 
 """An object with an ID"""
@@ -87,6 +87,7 @@ input ProductRegisterInput {
 }
 
 type ProductRegisterPayload {
+  ok: String
   error: String
   clientMutationId: String
 }

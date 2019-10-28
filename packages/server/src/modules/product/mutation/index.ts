@@ -1,5 +1,5 @@
-import ProductRegisterMutation from './ProductRegisterMutation';
+import ProductRegister from './ProductRegisterMutation';
 
 export default {
-	ProductRegisterMutation
+	ProductRegister
 };

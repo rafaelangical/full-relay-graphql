@@ -5,7 +5,7 @@ import { withNavigation } from 'react-navigation';
 import { createPaginationContainer, graphql } from 'react-relay';
 import { createQueryRendererModern } from '../../relay';
 
-import { UserList_query } from '../../__generated__/UserList_query.graphql';
+import { UserList_query } from './__generated__/UserList_query.graphql';
 
 type Props = {
 	query: UserList_query;
