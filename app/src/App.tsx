@@ -4,7 +4,7 @@ import UserCreate from './pages/SignIn/UserCreate';
 import BarcodeScanner from './BarcodeScanner';
 import Login from './pages/Login/Login';
 import UserList from './pages/UserList/UserList';
-import UserDetail from './pages/UserDetail/UserDetail';
+import UserDetail from './pages/UserDetails/UserDetail';
 import ProductCreate from './pages/ProductCreate/ProductCreate';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ProductList from './pages/ProductList/ProductList';
