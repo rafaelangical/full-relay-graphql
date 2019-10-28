@@ -32,7 +32,7 @@ yarn install
 Compile Relay
 
 ```
-yarn relay:app
+yarn relay
 ```
 
 Start Package
