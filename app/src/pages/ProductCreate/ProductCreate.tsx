@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { AsyncStorage, Alert } from 'react-native';
+import { AsyncStorage, Alert, Dimensions } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 
 import Button from '../../components/Button';
@@ -9,26 +9,36 @@ import Input from '../../components/Input';
 import ProductRegisterMutation from './Mutation/ProductRegisterMutation';
 import { ProductRegisterMutationResponse } from './Mutation/__generated__/ProductRegisterMutation.graphql';
 
+const { width, height } = Dimensions.get('window');
 const Wrapper = styled.View`
 	flex: 1;
 	align-items: center;
+	background-color: #fff;
 `;
-
-const ButtonTextList = styled.Text`
-	color: darkred;
-	font-weight: 500;
-	font-size: 16;
+const TextProducts = styled.Text`
+	color: #33334f;
+	letter-spacing: 1;
+	font-weight: bold;
+	font-size: 28px;
 `;
-const ButtonTextAdd = styled.Text`
-	color: darkblue;
-	font-weight: 500;
-	font-size: 16;
+const TextProductsComtainer = styled.View`
+	width: ${width};
+	height: ${height * 0.1};
+	background-color: #eee;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20;
 `;
-const Title = styled.Text`
-	font-size: 25;
-	color: darkblue;
-	margin-top: 30;
-	margin-bottom: 30;
+const TextButtons = styled.Text`
+	color: #fff;
+	fontSize: 24;
+	font-weight: bold;
+`;
+const ViewButtons = styled.View`
+	width: 100%;
+	height: ${height * 0.3}
+	justify-content: space-around;
+	align-items: center;
 `;
 export interface ProductRegisterProps {
 	navigation: NavigationScreenProp<{}>;
@@ -59,7 +69,6 @@ function ProductCreate({ navigation }: ProductRegisterProps) {
 
 		const onCompleted = (response: ProductRegisterMutationResponse) => {
 			console.warn('oncompleted create product');
-			console.log('onCompleted');
 			if (!response.ProductRegister) return;
 
 			const { error } = response.ProductRegister;
@@ -68,7 +77,6 @@ function ProductCreate({ navigation }: ProductRegisterProps) {
 			error && Alert.alert(error);
 
 			navigation.navigate('ProductList');
-			//console.warn(token);
 		};
 
 		const onError = (err) => {
@@ -82,7 +90,9 @@ function ProductCreate({ navigation }: ProductRegisterProps) {
 
 	return (
 		<Wrapper>
-			<Title>Cadastro de Produtos</Title>
+			<TextProductsComtainer>
+				<TextProducts>Cadastro de Produtos</TextProducts>
+			</TextProductsComtainer>
 			<Input
 				name="name"
 				placeholder="Nome do produto"
@@ -113,14 +123,17 @@ function ProductCreate({ navigation }: ProductRegisterProps) {
 				value={price}
 				onChangeText={(value: any) => setPrice(Number(value))}
 			/>
-
-			<Button onPress={() => handleRegister()}>
-				<ButtonTextAdd>Cadastrar</ButtonTextAdd>
-			</Button>
-
-			<Button>
-				<ButtonTextList onPress={() => navigation.navigate('ProductList')}>Lista de Produtos</ButtonTextList>
-			</Button>
+			<ViewButtons>
+				<Button onPress={() => handleRegister()}>
+					<TextButtons>Cadastrar</TextButtons>
+				</Button>
+				<Button onPress={() => navigation.navigate('ProductList')}>
+					<TextButtons>Lista de Produtos</TextButtons>
+				</Button>
+				<Button onPress={() => navigation.navigate('Dashboard')}>
+					<TextButtons>Dashboard</TextButtons>
+				</Button>
+			</ViewButtons>
 		</Wrapper>
 	);
 }

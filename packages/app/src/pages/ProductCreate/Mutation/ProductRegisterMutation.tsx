@@ -1,23 +1,19 @@
 import { commitMutation, graphql } from 'react-relay';
 import { Environment } from '../../../relay';
 
-import {
-	ProductRegisterInput,
-	ProdctRegisterMutationResponse
-} from '../../../__generated__/ProductRegisterMutation.graphql';
+import { ProductRegisterInput, ProductRegisterMutationResponse } from '../__generated__/ProductRegisterMutation.graphql';
 
 const mutation = graphql`
-	mutation UserRegisterWithEmailMutation($input: UserRegisterWithEmailInput!) {
+	mutation ProductRegisterMutation($input: ProductRegisterInput!) {
 		ProductRegister(input: $input) {
-			name
-			barcode
+			error
 		}
 	}
 `;
 
 function commit(
 	input: ProductRegisterInput,
-	onCompleted: (response: ProdctRegisterMutationResponse) => void,
+	onCompleted: (response: ProductRegisterMutationResponse) => void,
 	onError: (error: Error) => void
 ) {
 	return commitMutation(Environment, {

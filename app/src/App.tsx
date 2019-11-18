@@ -8,6 +8,7 @@ import UserDetail from './pages/UserDetails/UserDetail';
 import ProductCreate from './pages/ProductCreate/ProductCreate';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ProductList from './pages/ProductList/ProductList';
+import ProductDetail from './pages/ProductDetail/ProductDetail';
 
 const App = createSwitchNavigator(
 	{
@@ -17,6 +18,7 @@ const App = createSwitchNavigator(
 		UserList: { screen: UserList },
 		UserDetail: { screen: UserDetail },
 		ProductCreate: { screen: ProductCreate },
+		ProductDetail: { screen: ProductDetail },
 		Dashboard: { screen: Dashboard },
 		ProductList: { screen: ProductList }
 	},

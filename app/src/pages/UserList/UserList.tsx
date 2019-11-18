@@ -1,104 +1,105 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableHighlight, FlatList, AsyncStorage } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableHighlight, FlatList, AsyncStorage, Dimensions } from 'react-native';
 import { withNavigation } from 'react-navigation';
-
-import { createPaginationContainer, graphql } from 'react-relay';
+import { NavigationScreenProp } from 'react-navigation';
+import { createPaginationContainer, graphql, RelayPaginationProp } from 'react-relay';
 import { createQueryRendererModern } from '../../relay';
 
 import { UserList_query } from './__generated__/UserList_query.graphql';
+import styled from 'styled-components';
 
-type Props = {
+const { width, height } = Dimensions.get('window');
+const CardUser = styled.TouchableHighlight`
+	width: 386;
+	height: 85;
+	justify-content: center;
+	align-items: center;
+	background-color: #1eb36b;
+	margin-top: 20;
+`;
+const TextUserName = styled.Text`
+	font-size: 20;
+	color: #fff;
+`;
+const UserTextContainer = styled.View`
+	width: ${width};
+	height: 100;
+	justify-content: center;
+	align-items: center;
+	background-color: #eee;
+`;
+const TextUserList = styled.Text`
+	font-size: 24;
+	color: #33334f;
+`;
+export interface ProductListProps {
+	navigation: NavigationScreenProp<{}>;
+}
+interface RelayProps {
 	query: UserList_query;
-};
+	relay: RelayPaginationProp;
+}
+type Props = RelayProps & ProductListProps;
 
-type State = {
-	isFetchingTop: boolean;
-};
+function UserList({ navigation, query, relay }: Props) {
+	const { users } = query;
+	const [ isFetchingTop, setIsFetchingTop ] = useState(false);
+	const onRefresh = () => {
+		const { users } = query;
 
-class UserList extends Component<any, Props, State> {
-	renderFooter: any;
-	setState(arg0: { isFetchingTop: boolean }) {
-		throw new Error('Method not implemented.');
-	}
-	static navigationOptions = {
-		title: 'UserList'
-	};
-
-	state = {
-		isFetchingTop: false
-	};
-	async componentDidMount() {
-		const token = await AsyncStorage.getItem('TOKEN', null);
-		if (token === null) {
-			this.props.navigation.navigate('Login');
-		}
-	}
-	onRefresh = () => {
-		const { users } = this.props.query;
-
-		if (this.props.relay.isLoading()) {
+		if (relay.isLoading()) {
 			return;
 		}
 
-		this.setState({
-			isFetchingTop: true
-		});
+		setIsFetchingTop(true);
 
-		this.props.relay.refetchConnection(users.edges.length, (err) => {
-			this.setState({
-				isFetchingTop: false
-			});
+		relay.refetchConnection(users.edges.length, (err) => {
+			setIsFetchingTop(false);
 		});
 	};
 
-	onEndReached = () => {
-		if (!this.props.relay.hasMore() || this.props.relay.isLoading()) {
+	const onEndReached = () => {
+		if (!relay.hasMore() || relay.isLoading()) {
 			return;
 		}
 
 		// fetch more 2
-		this.props.relay.loadMore(2, (err) => {
+		relay.loadMore(2, (err) => {
 			console.log('loadMore: ', err);
 		});
 	};
 
-	renderItem = ({ item }) => {
+	const renderItem = ({ item }) => {
 		const { node } = item;
 
 		return (
-			<TouchableHighlight onPress={() => this.goToUserDetail(node)} underlayColor="whitesmoke">
-				<View style={styles.userContainer}>
-					<Text>{node.name}</Text>
-				</View>
-			</TouchableHighlight>
+			<CardUser onPress={() => goToUserDetail(node)} underlayColor="whitesmoke">
+				<TextUserName>{node.name}</TextUserName>
+			</CardUser>
 		);
 	};
 
-	goToUserDetail = (user) => {
-		const { navigate } = this.props.navigation;
-
+	const goToUserDetail = (user) => {
+		const { navigate } = navigation;
 		navigate('UserDetail', { id: user.id });
 	};
-	props: any;
-
-	render() {
-		const { users } = this.props.query;
-
-		return (
-			<View style={styles.container}>
-				<FlatList
-					data={users.edges}
-					renderItem={this.renderItem}
-					keyExtractor={(item) => item.node.id}
-					onEndReached={this.onEndReached}
-					onRefresh={this.onRefresh}
-					refreshing={this.state.isFetchingTop}
-					ItemSeparatorComponent={() => <View style={styles.separator} />}
-					ListFooterComponent={this.renderFooter}
-				/>
-			</View>
-		);
-	}
+	return (
+		<View style={styles.container}>
+			<UserTextContainer>
+				<TextUserList>Lista de usuários</TextUserList>
+			</UserTextContainer>
+			<FlatList
+				style={{ flex: 1 }}
+				data={users && users.edges}
+				renderItem={renderItem}
+				keyExtractor={(item) => item.node.id}
+				onEndReached={onEndReached}
+				onRefresh={onRefresh}
+				refreshing={isFetchingTop}
+				// ListFooterComponent={renderFooter}
+			/>
+		</View>
+	);
 }
 
 const UserListPaginationContainer = createPaginationContainer(
@@ -158,13 +159,12 @@ export default createQueryRendererModern(UserListPaginationContainer, UserList, 
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center'
 	},
 	separator: {
 		height: 1,
 		backgroundColor: '#FF4'
-	},
-	userContainer: {
-		margin: 30
 	}
 });

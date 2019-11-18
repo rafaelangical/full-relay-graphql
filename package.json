@@ -80,7 +80,10 @@
 			"eslint --fix",
 			"git add"
 		],
-		"*.yml": [ "prettier --write", "git add" ]
+		"*.yml": [
+			"prettier --write",
+			"git add"
+		]
 	},
 	"main": "index.js",
 	"pre-commit": "lint-staged",
@@ -96,14 +99,22 @@
 		"lint:staged": "lint-staged",
 		"relay:app": "yarn workspace app relay",
 		"start": "yarn start:server & yarn start:web & yarn start:app & yarn start:restria",
-		"start:android": "yarn workspace @entria/app android",
+		"start:android": "yarn workspace app android",
 		"start:app": "yarn workspace app start",
 		"start:ios": "yarn workspace app ios",
 		"start:server": "yarn workspace @entria/server start",
 		"test": "jest --coverage"
 	},
 	"workspaces": {
-		"packages": [ "packages/*" ],
-		"nohoist": [ "**/react-native", "**/react-native-*" ]
+		"packages": [
+			"packages/*"
+		],
+		"nohoist": [
+			"**/react-native",
+			"**/react-native-*"
+		]
+	},
+	"dependencies": {
+		"@babel/runtime": "^7.6.3"
 	}
 }

@@ -87,7 +87,7 @@ input ProductRegisterInput {
 }
 
 type ProductRegisterPayload {
-  ok: String
+  product: String
   error: String
   clientMutationId: String
 }
@@ -101,6 +101,7 @@ type Query {
   ): Node
   me: User
   user(id: ID!): User
+  product(id: ID!): Product
   users(after: String, first: Int, before: String, last: Int, search: String): UserConnection
   products(after: String, first: Int, before: String, last: Int, search: String): ProductConnection
 }
@@ -180,6 +181,7 @@ input UserLoginWithEmailInput {
 }
 
 type UserLoginWithEmailPayload {
+  id: String
   token: String
   error: String
   clientMutationId: String

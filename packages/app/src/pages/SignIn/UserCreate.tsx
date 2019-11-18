@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { AsyncStorage, Alert } from 'react-native';
-import { NavigationScreenProp } from 'react-navigation';
+import { NavigationScreenProp, NavigationEvents } from 'react-navigation';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -20,27 +20,19 @@ export interface UserRegisterProps {
 	navigation: NavigationScreenProp<{}>;
 }
 
-type State = {
-	name: string;
-	email: string;
-	password: string;
-};
+function UserCreate({ navigation }: UserRegisterProps) {
+	useEffect(() => {
+		const token = AsyncStorage.getItem('TOKEN', null);
+		if (token === null) {
+			navigation.navigate('Login');
+		}
+	}, []);
 
-class UserCreate extends Component<unknown, State, UserRegisterProps> {
-	static navigationOptions = {
-		title: 'UserCreate'
-	};
+	const [ name, setName ] = useState('');
+	const [ email, setEmail ] = useState('');
+	const [ password, setPassword ] = useState('');
 
-	state = {
-		name: '',
-		email: '',
-		password: ''
-	};
-
-	handleRegister = () => {
-		const { name, email, password } = this.state;
-		const { navigation } = this.props;
-
+	function handleRegister() {
 		console.warn('create user');
 		const input = {
 			name,
@@ -69,50 +61,33 @@ class UserCreate extends Component<unknown, State, UserRegisterProps> {
 		};
 
 		UserRegisterWithEmailMutation.commit(input, onCompleted, onError);
-	};
+	}
 
-	goToList = () => {
+	function goToList() {
 		console.warn('goto list create user');
-		this.props.navigation.navigate('UserList');
-	};
-	props: { navigation: any };
-
-	render() {
-		const { name, email, password } = this.state;
-		return (
-			<Wrapper>
-				<Input
-					name="name"
-					placeholder="Name"
-					value={name}
-					onChangeText={(value: any) => this.setState({ name: value })}
-				/>
-				<Input
-					name="email"
-					placeholder="Email"
-					value={email}
-					onChangeText={(value: any) => this.setState({ email: value })}
-				/>
-				<Input
-					name="password"
-					placeholder="Password"
-					value={password}
-					onChangeText={(value: any) => this.setState({ password: value })}
-					secureTextEntry
-				/>
-				<Button onPress={() => this.handleRegister()}>
-					<ButtonText>Register</ButtonText>
-				</Button>
-
-				<Button onPress={() => this.goToList()}>
-					<ButtonText>Lista de usuários</ButtonText>
-				</Button>
-			</Wrapper>
-		);
+		navigation.navigate('UserList');
 	}
-	setState(arg0: { password: any }): void {
-		throw new Error('Method not implemented.');
-	}
+
+	return (
+		<Wrapper>
+			<Input name="name" placeholder="Name" value={name} onChangeText={(value: any) => setName(value)} />
+			<Input name="email" placeholder="Email" value={email} onChangeText={(value: any) => setEmail(value)} />
+			<Input
+				name="password"
+				placeholder="Password"
+				value={password}
+				onChangeText={(value: any) => setPassword(value)}
+				secureTextEntry
+			/>
+			<Button onPress={() => handleRegister()}>
+				<ButtonText>Register</ButtonText>
+			</Button>
+
+			<Button onPress={() => goToList()}>
+				<ButtonText>Lista de usuários</ButtonText>
+			</Button>
+		</Wrapper>
+	);
 }
 
 export default UserCreate;

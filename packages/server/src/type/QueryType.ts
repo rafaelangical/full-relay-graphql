@@ -27,6 +27,18 @@ export default new GraphQLObjectType({
 				return UserLoader.load(context, id);
 			}
 		},
+		product: {
+			type: ProductType,
+			args: {
+				id: {
+					type: new GraphQLNonNull(GraphQLID)
+				}
+			},
+			resolve: (obj, args, context) => {
+				const { id } = fromGlobalId(args.id);
+				return ProductLoader.load(context, id);
+			}
+		},
 		users: {
 			type: UserConnection.connectionType,
 			args: {

@@ -1,11 +1,15 @@
 import { commitMutation, graphql } from 'react-relay';
 import { Environment } from '../../../relay';
 
-import { ProductRegisterInput, ProductRegisterMutationResponse } from '../__generated__/ProductRegisterMutation.graphql';
+import {
+	ProductRegisterInput,
+	ProductRegisterMutationResponse
+} from '../__generated__/ProductRegisterMutation.graphql';
 
 const mutation = graphql`
 	mutation ProductRegisterMutation($input: ProductRegisterInput!) {
 		ProductRegister(input: $input) {
+			product
 			error
 		}
 	}

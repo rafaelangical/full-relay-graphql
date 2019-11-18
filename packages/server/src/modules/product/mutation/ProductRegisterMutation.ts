@@ -48,9 +48,9 @@ export default mutationWithClientMutationId({
 		return product;
 	},
 	outputFields: {
-		ok: {
+		product: {
 			type: GraphQLString,
-			resolve: ({ name }) => name
+			resolve: ({ _id }) => _id
 		},
 		error: {
 			type: GraphQLString,

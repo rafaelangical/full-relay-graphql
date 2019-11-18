@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, AsyncStorage, Alert, Dimensions } from 'react-native';
+import { View, Text, AsyncStorage, Alert } from 'react-native';
 import styled from 'styled-components';
 
 import Button from '../../components/Button';
@@ -15,57 +15,51 @@ interface Props {
 	navigation: NavigationScreenProp<{}>;
 	query: UserDetail_query;
 }
-const { width, height } = Dimensions.get('window');
 
 const Wrapper = styled.View`
 	flex: 1;
 	align-items: center;
-	justify-content: flex-start;
+	justify-content: flex-end;
+`;
+const TextWelcome = styled.Text`
+	font-size: 30;
+	color: red;
+	position: absolute;
+	top: 30%;
+	margin-bottom: 50%;
 `;
 const TextProfile = styled.Text`
-	color: #33334f;
-	letter-spacing: 1;
-	font-weight: bold;
-	font-size: 28px;
-`;
-const UserTextContainer = styled.View`
-	width: ${width};
-	height: ${height * 0.2};
-	justify-content: center;
-	align-items: center;
-	background-color: #eee;
+	font-size: 35;
+	color: darkblue;
+	top: 20%;
+	position: absolute;
+	margin-bottom: 50%;
+	letter-spacing: 10;
 `;
 const ViewButton = styled.View`
-	width: ${width};
-	height: ${height * 0.4};
-	justify-content: space-between;
-	align-items: center;
-`;
-const TextButtons = styled.Text`
-	color: #fff;
-	fontSize: 24;
-	font-weight: bold;
+	width: 100%;
+	height: 50%;
+	align-self: flex-end;
 `;
 
 function UserDetail({ navigation, query }: Props) {
 	const { user } = query;
 	return (
 		<Wrapper>
-			<UserTextContainer>
-				<TextProfile>Olá, {user.name}</TextProfile>
-			</UserTextContainer>
+			<TextProfile>Perfil</TextProfile>
+			<TextWelcome>Olá {user.name}</TextWelcome>
 			<ViewButton>
 				<Button onPress={() => navigation.navigate('UserList')}>
-					<TextButtons>Lista de usuários</TextButtons>
+					<Text>Lista de usuários</Text>
 				</Button>
 				<Button onPress={() => navigation.navigate('ProductList')}>
-					<TextButtons>Lista de produtos</TextButtons>
+					<Text>Lista de produtos</Text>
 				</Button>
 				<Button onPress={() => navigation.navigate('ProductCreate')}>
-					<TextButtons>Cadastro de produtos</TextButtons>
+					<Text>Cadastro de produtos</Text>
 				</Button>
 				<Button onPress={() => navigation.navigate('Dashboard')}>
-					<TextButtons>Dashboard</TextButtons>
+					<Text>Dashboard</Text>
 				</Button>
 			</ViewButton>
 		</Wrapper>
@@ -76,7 +70,6 @@ const UserDetailFragmentContainer = createFragmentContainer(UserDetail, {
 	query: graphql`
 		fragment UserDetail_query on Query {
 			user(id: $id) {
-				_id
 				id
 				name
 				email

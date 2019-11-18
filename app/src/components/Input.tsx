@@ -2,11 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 
 const InputWrapper = styled.View`
-	width: 80%;
-	height: 40;
-	border-bottom-color: rgba(0, 0, 0, 0.1);
+	width: 386;
+	height: 67;
+	border-bottom-color: #eee;
 	border-bottom-width: 1;
-	margin: 20px;
+	margin-bottom: 20px;
+	padding-horizontal: 10;
+	background: #eee;
+	justify-content: center;
+	line-height: 24;
+	border-radius: 5;
+	font-size: 22;
 `;
 
 const RegisterTextInput = styled.TextInput`

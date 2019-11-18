@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { AsyncStorage, Alert } from 'react-native';
+import { AsyncStorage, Alert, Image, Text } from 'react-native';
 import { NavigationScreenProp, NavigationEvents } from 'react-navigation';
 
 import Button from '../../components/Button';
@@ -9,12 +9,30 @@ import Input from '../../components/Input';
 import UserRegisterWithEmailMutation from './Mutation/UserRegisterWithEmailMutation';
 import { UserRegisterWithEmailMutationResponse } from './Mutation/__generated__/UserRegisterWithEmailMutation.graphql';
 
-const Wrapper = styled.View`flex: 1;`;
+const Wrapper = styled.View`
+	flex: 1;
+	align-items: center;
+	justify-content: flex-start;
+	background-color: #fff;
+`;
 
-const ButtonText = styled.Text`
-	color: #000;
-	font-weight: 700;
-	font-size: 24px;
+const LoginButton = styled.TouchableHighlight`
+	width: 386;
+	height: 20;
+	justify-content: center;
+	align-items: flex-end;
+`;
+const ViewButton = styled.View`
+	width: 100%;
+	height: 68;
+	marginTop: 20;
+	justify-content: center;
+	align-items: center;
+`;
+const TextButtonSignup = styled.Text`
+	color: #fff;
+	fontSize: 24;
+	font-weight: bold;
 `;
 export interface UserRegisterProps {
 	navigation: NavigationScreenProp<{}>;
@@ -50,7 +68,7 @@ function UserCreate({ navigation }: UserRegisterProps) {
 			console.warn(error);
 			error && Alert.alert(error);
 
-			token && AsyncStorage.setItem('TOKEN', token) && navigation.navigate('UserList');
+			token && AsyncStorage.setItem('TOKEN', token) && navigation.navigate('Dashboard');
 			console.warn(token);
 		};
 
@@ -70,6 +88,10 @@ function UserCreate({ navigation }: UserRegisterProps) {
 
 	return (
 		<Wrapper>
+			<Image
+				style={{ width: 222, height: 240, marginTop: 37, marginBottom: 45 }}
+				source={require('../../assets/imgs/siginImage.png')}
+			/>
 			<Input name="name" placeholder="Name" value={name} onChangeText={(value: any) => setName(value)} />
 			<Input name="email" placeholder="Email" value={email} onChangeText={(value: any) => setEmail(value)} />
 			<Input
@@ -79,13 +101,19 @@ function UserCreate({ navigation }: UserRegisterProps) {
 				onChangeText={(value: any) => setPassword(value)}
 				secureTextEntry
 			/>
-			<Button onPress={() => handleRegister()}>
-				<ButtonText>Register</ButtonText>
-			</Button>
-
-			<Button onPress={() => goToList()}>
-				<ButtonText>Lista de usuários</ButtonText>
-			</Button>
+			<LoginButton
+				onPress={() => navigation.navigate('Login')}
+				style={{ marginBottom: 71, backgroundColor: '#fff' }}
+			>
+				<Text style={{ fontSize: 17, color: '#BCBCBC' }}>
+					Already have an account? <Text style={{ color: '#1EB36B' }}>Login</Text>
+				</Text>
+			</LoginButton>
+			<ViewButton>
+				<Button onPress={() => handleRegister()}>
+					<TextButtonSignup>Signup</TextButtonSignup>
+				</Button>
+			</ViewButton>
 		</Wrapper>
 	);
 }

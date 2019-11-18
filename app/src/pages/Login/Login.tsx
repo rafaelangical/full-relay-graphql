@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, AsyncStorage, Alert } from 'react-native';
+import { View, Text, AsyncStorage, Alert, Image } from 'react-native';
 import styled from 'styled-components';
 
 import Button from '../../components/Button';
@@ -17,21 +17,27 @@ interface Props {
 const Wrapper = styled.View`
 	flex: 1;
 	align-items: center;
-	justify-content: flex-end;
-`;
-const TextWelcome = styled.Text`
-	font-size: 30;
-	color: red;
-	position: absolute;
-	top: 30%;
-	margin-bottom: 50%;
+	justify-content: flex-start;
+	background-color: #fff;
 `;
 const ViewButton = styled.View`
 	width: 100%;
-	height: 150;
-	align-self: flex-end;
+	height: 68;
+	marginTop: 156;
+	justify-content: center;
+	align-items: center;
 `;
-
+const SignInButton = styled.TouchableHighlight`
+	width: 386;
+	height: 20;
+	justify-content: center;
+	align-items: flex-end;
+`;
+const TextButtonLogin = styled.Text`
+	color: #fff;
+	fontSize: 24;
+	font-weight: bold;
+`;
 export default function Login({ navigation }: Props) {
 	const [ email, setEmail ] = useState('');
 	const [ password, setPassword ] = useState('');
@@ -64,15 +70,20 @@ export default function Login({ navigation }: Props) {
 
 	return (
 		<Wrapper>
-			<TextWelcome>Bem vindo</TextWelcome>
+			<Image
+				style={{ width: 222, height: 261.6, marginTop: 37, marginBottom: 45 }}
+				source={require('../../assets/imgs/loginImage.png')}
+			/>
 			<Input placeholder="email" value={email} onChangeText={(email) => setEmail(email)} />
 			<Input placeholder="password" secureTextEntry value={password} onChangeText={(pass) => setPassword(pass)} />
+			<SignInButton onPress={() => navigation.navigate('UserCreate')}>
+				<Text style={{ fontSize: 17, color: '#BCBCBC' }}>
+					No account? <Text style={{ color: '#1EB36B' }}>Signup</Text>
+				</Text>
+			</SignInButton>
 			<ViewButton>
 				<Button onPress={() => handleLogin(email, password)}>
-					<Text>Login</Text>
-				</Button>
-				<Button onPress={() => navigation.navigate('UserCreate')}>
-					<Text>SignIn</Text>
+					<TextButtonLogin>Login</TextButtonLogin>
 				</Button>
 			</ViewButton>
 		</Wrapper>
