@@ -7,7 +7,6 @@ import { createQueryRendererModern } from '../../relay';
 import { Searchbar } from 'react-native-paper';
 
 import { ProductList_query } from './__generated__/ProductList_query.graphql';
-import { ProductList_me } from './__generated__/ProductList_me.graphql';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -64,7 +63,6 @@ export interface ProductListProps {
 }
 interface RelayProps {
 	query: ProductList_query;
-	me: ProductList_me;
 	relay: RelayPaginationProp;
 }
 
@@ -97,7 +95,7 @@ function ProductList({ navigation, query, relay }: Props) {
 		);
 	};
 	const onRefresh = () => {
-		const { users } = this.props.query;
+		const { products } = this.props.query;
 
 		if (relay.isLoading()) {
 			return;
@@ -105,7 +103,7 @@ function ProductList({ navigation, query, relay }: Props) {
 
 		setIsFetchingTop(true);
 
-		relay.refetchConnection(users.edges.length, (err) => {
+		relay.refetchConnection(products.edges.length, (err) => {
 			setIsFetchingTop(false);
 		});
 	};
@@ -166,10 +164,6 @@ const UserListPaginationContainer = createPaginationContainer(
 						}
 					}
 				}
-			}
-		`,
-		me: graphql`
-			fragment ProductList_me on Query {
 				me {
 					id
 					name
@@ -199,7 +193,6 @@ const UserListPaginationContainer = createPaginationContainer(
 		query: graphql`
 			query ProductListPaginationQuery($count: Int!, $cursor: String, $search: String) {
 				...ProductList_query
-				...ProductList_me
 			}
 		`
 	}
@@ -209,7 +202,6 @@ export default createQueryRendererModern(UserListPaginationContainer, ProductLis
 	query: graphql`
 		query ProductListQuery($count: Int!, $cursor: String, $search: String) {
 			...ProductList_query
-			...ProductList_me
 		}
 	`,
 	variables: { cursor: null, count: 1 }
