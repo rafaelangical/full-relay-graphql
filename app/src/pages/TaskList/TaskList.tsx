@@ -230,7 +230,7 @@ export default createQueryRendererModern(TaskListPaginationContainer, TaskList, 
 			...TaskList_query
 		}
 	`,
-	variables: { cursor: null, count: 1 }
+	variables: { cursor: null, count: 1, search: '' }
 });
 
 const styles = StyleSheet.create({
