@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, AsyncStorage, Alert } from 'react-native';
+import { View, Text } from 'react-native';
+
 import styled from 'styled-components';
 
 import Button from '../../components/Button';

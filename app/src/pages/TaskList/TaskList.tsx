@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { AsyncStorage, Text, ScrollView, FlatList, StyleSheet, Dimensions, View } from 'react-native';
+import {
+	AsyncStorage,
+	Text,
+	ScrollView,
+	FlatList,
+	StyleSheet,
+	Dimensions,
+	View,
+	TouchableOpacity,
+	Image
+} from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 import { createPaginationContainer, graphql, RelayPaginationProp } from 'react-relay';
 import { createQueryRendererModern } from '../../relay';
 import { Searchbar } from 'react-native-paper';
 
-import { ProductList_query } from './__generated__/ProductList_query.graphql';
+import { TaskList_query } from './__generated__/TaskList_query.graphql';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -18,7 +28,7 @@ const Wrapper = styled.View`
 	align-items: center;
 	padding-bottom: 10;
 `;
-const CardProduct = styled.TouchableOpacity`
+const CardTask = styled.TouchableOpacity`
 	height: 85;
 	width: 386;
 	margin: 0 auto;
@@ -30,6 +40,18 @@ const CardProduct = styled.TouchableOpacity`
 	background-color: #1eb36b;
 	border: 1px solid #1eb36b;
 	border-radius: 5;
+`;
+const ButtonAddNewTask = styled.TouchableOpacity`
+	height: 70;
+	width: 70;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: #33334f;
+	position: absolute;
+	bottom: 23;
+	right: 19;
+	border-radius: 60;
 `;
 const ViewTopSearch = styled.View`
 	width: ${width};
@@ -58,19 +80,19 @@ const TitleSubTask = styled.Text`
 	margin-bottom: 15;
 	font-weight: 500;
 `;
-export interface ProductListProps {
+export interface TaskListProps {
 	navigation: NavigationScreenProp<{}>;
 }
 interface RelayProps {
-	query: ProductList_query;
+	query: TaskList_query;
 	relay: RelayPaginationProp;
 }
 
-type Props = RelayProps & ProductListProps;
+type Props = RelayProps & TaskListProps;
 
-function ProductList({ navigation, query, relay }: Props) {
-	const { products, me } = query;
-	console.warn(me);
+function TaskList({ navigation, query, relay }: Props) {
+	const { tasks, me } = query;
+	// console.warn(me);
 	const [ isFetchingTop, setIsFetchingTop ] = useState(false);
 	const [ search, setSearch ] = useState('');
 	const onEndReached = () => {
@@ -88,14 +110,14 @@ function ProductList({ navigation, query, relay }: Props) {
 		const { node } = item;
 
 		return (
-			<CardProduct onPress={() => goToProductDetail(node)}>
+			<CardTask onPress={() => goToProductDetail(node)}>
 				<ProductName>{node.name}</ProductName>
 				<ProductDescription>{node.description}</ProductDescription>
-			</CardProduct>
+			</CardTask>
 		);
 	};
 	const onRefresh = () => {
-		const { products } = this.props.query;
+		const { tasks } = this.props.query;
 
 		if (relay.isLoading()) {
 			return;
@@ -103,17 +125,17 @@ function ProductList({ navigation, query, relay }: Props) {
 
 		setIsFetchingTop(true);
 
-		relay.refetchConnection(products.edges.length, (err) => {
+		relay.refetchConnection(tasks.edges.length, (err) => {
 			setIsFetchingTop(false);
 		});
 	};
 	const goToProductDetail = (product) => {
-		navigation.navigate('ProductDetail', { id: product.id });
+		navigation.navigate('TaskDetail', { id: product.id });
 	};
 	return (
 		<Wrapper>
 			<ViewTopSearch>
-				<Title>Hello, Rafael</Title>
+				<Title>Hello, {me.name}</Title>
 				<TitleSubTask>Check your tasks 👇</TitleSubTask>
 				<Searchbar
 					placeholder="Search..."
@@ -130,7 +152,7 @@ function ProductList({ navigation, query, relay }: Props) {
 			</ViewTopSearch>
 			<FlatList
 				style={{ flex: 1, width: width }}
-				data={products && products.edges}
+				data={tasks && tasks.edges}
 				renderItem={renderItem}
 				keyExtractor={(item) => item.node.id}
 				onEndReached={onEndReached}
@@ -139,16 +161,19 @@ function ProductList({ navigation, query, relay }: Props) {
 				ItemSeparatorComponent={() => <View style={styles.separator} />}
 				//ListFooterComponent={this.renderFooter}
 			/>
+			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
+				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
+			</ButtonAddNewTask>
 		</Wrapper>
 	);
 }
 
-const UserListPaginationContainer = createPaginationContainer(
-	ProductList,
+const TaskListPaginationContainer = createPaginationContainer(
+	TaskList,
 	{
 		query: graphql`
-			fragment ProductList_query on Query {
-				products(first: $count, after: $cursor, search: $search) @connection(key: "ProductList_products") {
+			fragment TaskList_query on Query {
+				tasks(first: $count, after: $cursor, search: $search) @connection(key: "TaskList_tasks") {
 					pageInfo {
 						hasNextPage
 						endCursor
@@ -156,17 +181,18 @@ const UserListPaginationContainer = createPaginationContainer(
 					edges {
 						node {
 							id
+							_id
 							name
-							barcode
 							description
-							qtd
-							price
 						}
 					}
 				}
 				me {
 					id
+					_id
 					name
+					email
+					active
 				}
 			}
 		`
@@ -174,7 +200,7 @@ const UserListPaginationContainer = createPaginationContainer(
 	{
 		direction: 'forward',
 		getConnectionFromProps(props) {
-			return props.query && props.query.products;
+			return props.query && props.query.tasks;
 		},
 		getFragmentVariables(prevVars, totalCount) {
 			return {
@@ -191,17 +217,17 @@ const UserListPaginationContainer = createPaginationContainer(
 		},
 		variables: { cursor: null },
 		query: graphql`
-			query ProductListPaginationQuery($count: Int!, $cursor: String, $search: String) {
-				...ProductList_query
+			query TaskListPaginationQuery($count: Int!, $cursor: String, $search: String) {
+				...TaskList_query
 			}
 		`
 	}
 );
 
-export default createQueryRendererModern(UserListPaginationContainer, ProductList, {
+export default createQueryRendererModern(TaskListPaginationContainer, TaskList, {
 	query: graphql`
-		query ProductListQuery($count: Int!, $cursor: String, $search: String) {
-			...ProductList_query
+		query TaskListQuery($count: Int!, $cursor: String, $search: String) {
+			...TaskList_query
 		}
 	`,
 	variables: { cursor: null, count: 1 }

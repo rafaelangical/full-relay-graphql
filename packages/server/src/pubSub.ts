@@ -4,8 +4,8 @@ export const EVENTS = {
 	USER: {
 		ADDED: 'USER_ADDED'
 	},
-	PRODUCT: {
-		ADDED: 'PRODUCT_ADDED'
+	TASK: {
+		ADDED: 'TASK_ADDED'
 	}
 };
 

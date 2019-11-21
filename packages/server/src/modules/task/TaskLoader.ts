@@ -5,11 +5,11 @@ import { ConnectionArguments } from 'graphql-relay';
 import mongoose from 'mongoose';
 declare type ObjectId = mongoose.Schema.Types.ObjectId;
 
-import ProductModel, { IProduct } from './ProductModel';
+import TaskModel, { ITask } from './TaskModel';
 
 import { GraphQLContext } from '../../TypeDefinition';
 
-export default class Product {
+export default class Task {
 	id: string;
 
 	_id: Types.ObjectId;
@@ -18,20 +18,11 @@ export default class Product {
 
 	description: string | null | undefined;
 
-	barcode: string | null | undefined;
-
-	price: number | null | undefined;
-
-	qtd: number | null | undefined;
-
-	constructor(data: IProduct, { product }: GraphQLContext) {
+	constructor(data: ITask) {
 		this.id = data._id;
 		this._id = data._id;
 		this.name = data.name;
 		this.description = data.description;
-		this.barcode = data.barcode;
-		this.price = data.price;
-		this.qtd = data.qtd;
 
 		// contollers to send variables, example::::
 
@@ -43,40 +34,40 @@ export default class Product {
 	}
 }
 
-export const getLoader = () => new DataLoader((ids: ReadonlyArray<string>) => mongooseLoader(ProductModel, ids));
+export const getLoader = () => new DataLoader((ids: ReadonlyArray<string>) => mongooseLoader(TaskModel, ids));
 
 const viewerCanSee = () => true;
 
-export const load = async (context: GraphQLContext, id: string | Object | ObjectId): Promise<Product | null> => {
+export const load = async (context: GraphQLContext, id: string | Object | ObjectId): Promise<Task | null> => {
 	if (!id && typeof id !== 'string') {
 		return null;
 	}
 
 	let data;
 	try {
-		data = await context.dataloaders.ProductLoader.load(id as string);
+		data = await context.dataloaders.TaskLoader.load(id as string);
 	} catch (err) {
 		return null;
 	}
-	return viewerCanSee() ? new Product(data, context) : null;
+	return viewerCanSee() ? new Task(data, context) : null;
 };
 
 export const clearCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId) =>
-	dataloaders.ProductLoader.clear(id.toString());
-export const primeCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId, data: IProduct) =>
-	dataloaders.ProductLoader.prime(id.toString(), data);
-export const clearAndPrimeCache = (context: GraphQLContext, id: Types.ObjectId, data: IProduct) =>
+	dataloaders.TaskLoader.clear(id.toString());
+export const primeCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId, data: ITask) =>
+	dataloaders.TaskLoader.prime(id.toString(), data);
+export const clearAndPrimeCache = (context: GraphQLContext, id: Types.ObjectId, data: ITask) =>
 	clearCache(context, id) && primeCache(context, id, data);
 
-type ProductArgs = ConnectionArguments & {
+type TaskArgs = ConnectionArguments & {
 	search?: string;
 };
-export const loadProducts = async (context: GraphQLContext, args: ProductArgs) => {
+export const loadTasks = async (context: GraphQLContext, args: TaskArgs) => {
 	const where = args.search ? { name: { $regex: new RegExp(`^${args.search}`, 'ig') } } : {};
-	const products = ProductModel.find(where, { _id: 1 }).sort({ createdAt: -1 });
+	const tasks = TaskModel.find(where, { _id: 1 }).sort({ createdAt: -1 });
 
 	return connectionFromMongoCursor({
-		cursor: products,
+		cursor: tasks,
 		context,
 		args,
 		loader: load

@@ -2,13 +2,13 @@ import Dataloader from 'dataloader';
 import { PubSub } from 'graphql-subscriptions';
 
 import { IUser } from './modules/user/UserModel';
-import { IProduct } from './modules/product/ProductModel';
+import { ITask } from './modules/task/TaskModel';
 
 type Key = string;
 
 export type Dataloaders = {
 	UserLoader: Dataloader<Key, IUser>;
-	ProductLoader: Dataloader<Key, IProduct>;
+	TaskLoader: Dataloader<Key, ITask>;
 };
 
 export type GraphQLContext = {

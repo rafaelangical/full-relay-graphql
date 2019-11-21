@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, AsyncStorage, Alert, Dimensions } from 'react-native';
+import { Dimensions, Image } from 'react-native';
 import styled from 'styled-components';
 
 import Button from '../../components/Button';
@@ -46,6 +46,18 @@ const TextButtons = styled.Text`
 	fontSize: 24;
 	font-weight: bold;
 `;
+const ButtonAddNewTask = styled.TouchableOpacity`
+	height: 70;
+	width: 70;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: #33334f;
+	position: absolute;
+	bottom: 23;
+	right: 19;
+	border-radius: 60;
+`;
 
 function UserDetail({ navigation, query }: Props) {
 	const { user } = query;
@@ -53,21 +65,22 @@ function UserDetail({ navigation, query }: Props) {
 		<Wrapper>
 			<UserTextContainer>
 				<TextProfile>Olá, {user.name}</TextProfile>
+				<TextProfile>{user.email}</TextProfile>
 			</UserTextContainer>
 			<ViewButton>
-				<Button onPress={() => navigation.navigate('UserList')}>
-					<TextButtons>Lista de usuários</TextButtons>
+				<Button onPress={() => navigation.navigate('TaskList')}>
+					<TextButtons>List of Products</TextButtons>
 				</Button>
-				<Button onPress={() => navigation.navigate('ProductList')}>
-					<TextButtons>Lista de produtos</TextButtons>
-				</Button>
-				<Button onPress={() => navigation.navigate('ProductCreate')}>
-					<TextButtons>Cadastro de produtos</TextButtons>
+				<Button onPress={() => navigation.navigate('TaskCreate')}>
+					<TextButtons>Add products</TextButtons>
 				</Button>
 				<Button onPress={() => navigation.navigate('Dashboard')}>
-					<TextButtons>Dashboard</TextButtons>
+					<TextButtons>Main</TextButtons>
 				</Button>
 			</ViewButton>
+			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
+				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
+			</ButtonAddNewTask>
 		</Wrapper>
 	);
 }

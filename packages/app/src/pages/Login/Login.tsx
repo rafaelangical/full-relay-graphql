@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, AsyncStorage, Alert } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import styled from 'styled-components';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';

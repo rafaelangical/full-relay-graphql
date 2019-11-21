@@ -1,4 +1,4 @@
 import User from '../modules/user/UserModel';
-import Product from '../modules/product/ProductModel';
+import Task from '../modules/task/TaskModel';
 
-export { User, Product };
+export { User, Task };

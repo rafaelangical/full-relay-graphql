@@ -2,9 +2,9 @@ import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLID } from 'gra
 import { connectionArgs, fromGlobalId } from 'graphql-relay';
 
 import UserType, { UserConnection } from '../modules/user/UserType';
-import ProductType, { ProductConnection } from '../modules/product/ProductType';
+import TaskType, { TaskConnection } from '../modules/task/TaskType';
 import { nodeField } from '../interface/NodeInterface';
-import { UserLoader, ProductLoader } from '../loader';
+import { UserLoader, TaskLoader } from '../loader';
 
 export default new GraphQLObjectType({
 	name: 'Query',
@@ -27,8 +27,8 @@ export default new GraphQLObjectType({
 				return UserLoader.load(context, id);
 			}
 		},
-		product: {
-			type: ProductType,
+		task: {
+			type: TaskType,
 			args: {
 				id: {
 					type: new GraphQLNonNull(GraphQLID)
@@ -36,7 +36,7 @@ export default new GraphQLObjectType({
 			},
 			resolve: (obj, args, context) => {
 				const { id } = fromGlobalId(args.id);
-				return ProductLoader.load(context, id);
+				return TaskLoader.load(context, id);
 			}
 		},
 		users: {
@@ -49,15 +49,15 @@ export default new GraphQLObjectType({
 			},
 			resolve: (obj, args, context) => UserLoader.loadUsers(context, args)
 		},
-		products: {
-			type: ProductConnection.connectionType,
+		tasks: {
+			type: TaskConnection.connectionType,
 			args: {
 				...connectionArgs,
 				search: {
 					type: GraphQLString
 				}
 			},
-			resolve: (obj, args, context) => ProductLoader.loadProducts(context, args)
+			resolve: (obj, args, context) => TaskLoader.loadTasks(context, args)
 		}
 	})
 });

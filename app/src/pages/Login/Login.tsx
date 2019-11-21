@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, AsyncStorage, Alert, Image } from 'react-native';
+import React, { useState, Fragment } from 'react';
+import { View, Text, Alert, Image } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import styled from 'styled-components';
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -39,15 +42,7 @@ const TextButtonLogin = styled.Text`
 	font-weight: bold;
 `;
 export default function Login({ navigation }: Props) {
-	const [ email, setEmail ] = useState('');
-	const [ password, setPassword ] = useState('');
-
-	const handleLogin = (email, password) => {
-		const input = {
-			email,
-			password
-		};
-
+	const handleLogin = (values) => {
 		const onCompleted = (response: UserLoginWithEmailMutationResponse) => {
 			if (!response.UserLoginWithEmail) return;
 
@@ -56,7 +51,6 @@ export default function Login({ navigation }: Props) {
 			error && Alert.alert(error);
 
 			token && AsyncStorage.setItem('TOKEN', token) && navigation.navigate('Dashboard');
-			console.warn(token);
 		};
 
 		const onError = () => {
@@ -65,7 +59,7 @@ export default function Login({ navigation }: Props) {
 			console.log('onError');
 		};
 
-		UserLoginWithEmailMutation.commit(input, onCompleted, onError);
+		UserLoginWithEmailMutation.commit(values, onCompleted, onError);
 	};
 
 	return (
@@ -74,18 +68,46 @@ export default function Login({ navigation }: Props) {
 				style={{ width: 222, height: 261.6, marginTop: 37, marginBottom: 45 }}
 				source={require('../../assets/imgs/loginImage.png')}
 			/>
-			<Input placeholder="email" value={email} onChangeText={(email) => setEmail(email)} />
-			<Input placeholder="password" secureTextEntry value={password} onChangeText={(pass) => setPassword(pass)} />
-			<SignInButton onPress={() => navigation.navigate('UserCreate')}>
-				<Text style={{ fontSize: 17, color: '#BCBCBC' }}>
-					No account? <Text style={{ color: '#1EB36B' }}>Signup</Text>
-				</Text>
-			</SignInButton>
-			<ViewButton>
-				<Button onPress={() => handleLogin(email, password)}>
-					<TextButtonLogin>Login</TextButtonLogin>
-				</Button>
-			</ViewButton>
+			<Formik
+				initialValues={{ email: '', password: '' }}
+				onSubmit={(values) => handleLogin(values)}
+				validationSchema={yup.object().shape({
+					email: yup.string().email().required(),
+					password: yup.string().min(6).required()
+				})}
+			>
+				{({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
+					<Fragment>
+						{touched.email &&
+						errors.email && <Text style={{ fontSize: 14, color: 'red' }}>{errors.email}</Text>}
+						<Input
+							value={values.email}
+							onChangeText={handleChange('email')}
+							onBlur={() => setFieldTouched('email')}
+							placeholder="email"
+						/>
+						{touched.password &&
+						errors.password && <Text style={{ fontSize: 14, color: 'red' }}>{errors.password}</Text>}
+						<Input
+							value={values.password}
+							onChangeText={handleChange('password')}
+							placeholder="password"
+							onBlur={() => setFieldTouched('password')}
+							secureTextEntry={true}
+						/>
+						<SignInButton onPress={() => navigation.navigate('UserCreate')}>
+							<Text style={{ fontSize: 17, color: '#BCBCBC' }}>
+								No account? <Text style={{ color: '#1EB36B' }}>Signup</Text>
+							</Text>
+						</SignInButton>
+						<ViewButton>
+							<Button onPress={handleSubmit}>
+								<TextButtonLogin>Login</TextButtonLogin>
+							</Button>
+						</ViewButton>
+					</Fragment>
+				)}
+			</Formik>
 		</Wrapper>
 	);
 }

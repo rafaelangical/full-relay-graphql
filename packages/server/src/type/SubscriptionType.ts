@@ -1,12 +1,12 @@
 import { GraphQLObjectType } from 'graphql';
 
 import UserSubscriptions from '../modules/user/subscription';
-import ProductSubscriptions from '../modules/product/subscription';
+import TaskSubscriptions from '../modules/task/subscription';
 
 export default new GraphQLObjectType({
 	name: 'Subscription',
 	fields: {
 		...UserSubscriptions,
-		...ProductSubscriptions
+		...TaskSubscriptions
 	}
 });

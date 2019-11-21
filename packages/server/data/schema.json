@@ -83,7 +83,7 @@
               "deprecationReason": null
             },
             {
-              "name": "product",
+              "name": "task",
               "description": null,
               "args": [
                 {
@@ -103,7 +103,7 @@
               ],
               "type": {
                 "kind": "OBJECT",
-                "name": "Product",
+                "name": "Task",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -173,7 +173,7 @@
               "deprecationReason": null
             },
             {
-              "name": "products",
+              "name": "tasks",
               "description": null,
               "args": [
                 {
@@ -229,7 +229,7 @@
               ],
               "type": {
                 "kind": "OBJECT",
-                "name": "ProductConnection",
+                "name": "TaskConnection",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -284,7 +284,7 @@
             },
             {
               "kind": "OBJECT",
-              "name": "Product",
+              "name": "Task",
               "ofType": null
             }
           ]
@@ -392,8 +392,8 @@
         },
         {
           "kind": "OBJECT",
-          "name": "Product",
-          "description": "Product data",
+          "name": "Task",
+          "description": "Task data",
           "fields": [
             {
               "name": "id",
@@ -446,42 +446,6 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
-            },
-            {
-              "name": "barcode",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "price",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "qtd",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -492,16 +456,6 @@
               "ofType": null
             }
           ],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "SCALAR",
-          "name": "Float",
-          "description": "The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).",
-          "fields": null,
-          "inputFields": null,
-          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },
@@ -738,7 +692,7 @@
         },
         {
           "kind": "OBJECT",
-          "name": "ProductConnection",
+          "name": "TaskConnection",
           "description": "A connection to a list of items.",
           "fields": [
             {
@@ -833,7 +787,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "ProductEdge",
+                    "name": "TaskEdge",
                     "ofType": null
                   }
                 }
@@ -849,7 +803,7 @@
         },
         {
           "kind": "OBJECT",
-          "name": "ProductEdge",
+          "name": "TaskEdge",
           "description": "An edge in a connection.",
           "fields": [
             {
@@ -861,7 +815,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "OBJECT",
-                  "name": "Product",
+                  "name": "Task",
                   "ofType": null
                 }
               },
@@ -977,7 +931,7 @@
               "deprecationReason": null
             },
             {
-              "name": "ProductRegister",
+              "name": "TaskRegister",
               "description": null,
               "args": [
                 {
@@ -988,7 +942,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "ProductRegisterInput",
+                      "name": "TaskRegisterInput",
                       "ofType": null
                     }
                   },
@@ -997,7 +951,7 @@
               ],
               "type": {
                 "kind": "OBJECT",
-                "name": "ProductRegisterPayload",
+                "name": "TaskRegisterPayload",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -1325,7 +1279,7 @@
         },
         {
           "kind": "INPUT_OBJECT",
-          "name": "ProductRegisterInput",
+          "name": "TaskRegisterInput",
           "description": null,
           "fields": null,
           "inputFields": [
@@ -1358,48 +1312,6 @@
               "defaultValue": null
             },
             {
-              "name": "barcode",
-              "description": null,
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "price",
-              "description": null,
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Float",
-                  "ofType": null
-                }
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "qtd",
-              "description": null,
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              "defaultValue": null
-            },
-            {
               "name": "clientMutationId",
               "description": null,
               "type": {
@@ -1416,11 +1328,11 @@
         },
         {
           "kind": "OBJECT",
-          "name": "ProductRegisterPayload",
+          "name": "TaskRegisterPayload",
           "description": null,
           "fields": [
             {
-              "name": "product",
+              "name": "task",
               "description": null,
               "args": [],
               "type": {
@@ -1479,12 +1391,12 @@
               "deprecationReason": null
             },
             {
-              "name": "ProductAdded",
+              "name": "TaskAdded",
               "description": null,
               "args": [],
               "type": {
                 "kind": "OBJECT",
-                "name": "ProductAddedPayload",
+                "name": "TaskAddedPayload",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -1521,16 +1433,16 @@
         },
         {
           "kind": "OBJECT",
-          "name": "ProductAddedPayload",
+          "name": "TaskAddedPayload",
           "description": null,
           "fields": [
             {
-              "name": "productEdge",
+              "name": "taskEdge",
               "description": null,
               "args": [],
               "type": {
                 "kind": "OBJECT",
-                "name": "ProductEdge",
+                "name": "TaskEdge",
                 "ofType": null
               },
               "isDeprecated": false,

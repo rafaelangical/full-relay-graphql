@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableHighlight, FlatList, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight, FlatList } from 'react-native';
 import { withNavigation } from 'react-navigation';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { createPaginationContainer, graphql } from 'react-relay';
 import { createQueryRendererModern } from '../../relay';

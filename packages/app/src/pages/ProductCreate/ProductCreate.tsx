@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { AsyncStorage, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';

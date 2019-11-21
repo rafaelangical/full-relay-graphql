@@ -3,10 +3,8 @@ import styled from 'styled-components';
 
 const InputWrapper = styled.View`
 	width: 386;
-	height: 67;
-	border-bottom-color: #eee;
-	border-bottom-width: 1;
-	margin-bottom: 20px;
+	height: 231;
+	border: 1px solid #eee;
 	padding-horizontal: 10;
 	background: #eee;
 	justify-content: center;
@@ -15,8 +13,8 @@ const InputWrapper = styled.View`
 	font-size: 22;
 `;
 
-const RegisterTextInput = styled.TextInput`
-	height: 40;
+const TextInput = styled.TextInput`
+	height: 100%;
 	width: 100%;
 `;
 
@@ -26,13 +24,14 @@ type Props = {
 	value?: string;
 	onChangeText?: (string) => void;
 	secureTextEntry?: boolean;
+	textAlignVertical?: string;
 	onBlur?: (string) => void;
 };
 
-const Input = (props: Props) => (
+const TextArea = (props: Props) => (
 	<InputWrapper>
-		<RegisterTextInput {...props} />
+		<TextInput {...props} />
 	</InputWrapper>
 );
 
-export default Input;
+export default TextArea;
