@@ -12,7 +12,7 @@ import {
 	Image
 } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
-import { createPaginationContainer, graphql, RelayPaginationProp } from 'react-relay';
+import { createPaginationContainer, graphql, RelayPaginationProp, createRefetchContainer } from 'react-relay';
 import { createQueryRendererModern } from '../../relay';
 import { Searchbar } from 'react-native-paper';
 
@@ -96,14 +96,13 @@ function TaskList({ navigation, query, relay }: Props) {
 	const [ isFetchingTop, setIsFetchingTop ] = useState(false);
 	const [ search, setSearch ] = useState('');
 	const onEndReached = () => {
-		if (!relay.hasMore() || relay.isLoading()) {
-			return;
-		}
-
+		// /if (!relay.hasMore() || relay.isLoading()) {
+		// /	return;
+		// /}
 		// fetch more 2
-		relay.loadMore(2, (err) => {
-			console.log('loadMore: ', err);
-		});
+		//relay.loadMore(2, (err) => {
+		//	console.log('loadMore: ', err);
+		//});
 	};
 
 	const renderItem = ({ item }) => {
@@ -167,12 +166,16 @@ function TaskList({ navigation, query, relay }: Props) {
 		</Wrapper>
 	);
 }
-
-const TaskListPaginationContainer = createPaginationContainer(
+const TaskListRefetchContainer = createRefetchContainer(
 	TaskList,
 	{
 		query: graphql`
-			fragment TaskList_query on Query {
+			fragment TaskList_query on Query
+				@argumentDefinitions(
+					count: { type: "Int", defaultValue: 10 }
+					cursor: { type: "String" }
+					search: { type: "String" }
+				) {
 				tasks(first: $count, after: $cursor, search: $search) @connection(key: "TaskList_tasks") {
 					pageInfo {
 						hasNextPage
@@ -180,57 +183,90 @@ const TaskListPaginationContainer = createPaginationContainer(
 					}
 					edges {
 						node {
-							id
 							_id
+							id
 							name
 							description
 						}
 					}
 				}
 				me {
-					id
 					_id
+					id
 					name
-					email
-					active
 				}
 			}
 		`
 	},
-	{
-		direction: 'forward',
-		getConnectionFromProps(props) {
-			return props.query && props.query.tasks;
-		},
-		getFragmentVariables(prevVars, totalCount) {
-			return {
-				...prevVars,
-				count: totalCount
-			};
-		},
-		getVariables(props, { count, cursor, search }, fragmentVariables) {
-			return {
-				count,
-				cursor,
-				search
-			};
-		},
-		variables: { cursor: null },
-		query: graphql`
-			query TaskListPaginationQuery($count: Int!, $cursor: String, $search: String) {
-				...TaskList_query
-			}
-		`
-	}
+	graphql`
+		query TaskListRefetchContainerQuery($count: Int, $cursor: String, $search: String) {
+			...TaskList_query @arguments(count: $count, cursor: $cursor, search: $search)
+		}
+	`
 );
 
-export default createQueryRendererModern(TaskListPaginationContainer, TaskList, {
+// const TaskListPaginationContainer = createPaginationContainer(
+// 	TaskList,
+// 	{
+// 		query: graphql`
+// 			fragment TaskList_query on Query {
+// 				tasks(first: $count, after: $cursor, search: $search) @connection(key: "TaskList_tasks") {
+// 					pageInfo {
+// 						hasNextPage
+// 						endCursor
+// 					}
+// 					edges {
+// 						node {
+// 							id
+// 							_id
+// 							name
+// 							description
+// 						}
+// 					}
+// 				}
+// 				me {
+// 					id
+// 					_id
+// 					name
+// 					email
+// 					active
+// 				}
+// 			}
+// 		`
+// 	},
+// 	{
+// 		direction: 'forward',
+// 		getConnectionFromProps(props) {
+// 			return props.query && props.query.tasks;
+// 		},
+// 		getFragmentVariables(prevVars, totalCount) {
+// 			return {
+// 				...prevVars,
+// 				count: totalCount
+// 			};
+// 		},
+// 		getVariables(props, { count, cursor, search }, fragmentVariables) {
+// 			return {
+// 				count,
+// 				cursor,
+// 				search
+// 			};
+// 		},
+// 		variables: { cursor: null },
+// 		query: graphql`
+// 			query TaskListPaginationQuery($count: Int!, $cursor: String, $search: String) {
+// 				...TaskList_query
+// 			}
+// 		`
+// 	}
+// );
+export default createQueryRendererModern(TaskListRefetchContainer, TaskList, {
 	query: graphql`
 		query TaskListQuery($count: Int!, $cursor: String, $search: String) {
-			...TaskList_query
+			...TaskList_query @arguments(search: $search)
 		}
 	`,
-	variables: { cursor: null, count: 1, search: '' }
+	variables: { cursor: null, count: 1, search: 'Hs' }
 });
 
 const styles = StyleSheet.create({

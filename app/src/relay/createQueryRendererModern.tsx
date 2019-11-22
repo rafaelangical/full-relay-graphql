@@ -25,6 +25,8 @@ export default function createQueryRenderer(
 		render() {
 			const variables = queriesParams ? queriesParams(this.props) : config.variables;
 
+			console.log('variables');
+			console.log(variables);
 			return (
 				<QueryRenderer
 					environment={Environment}
