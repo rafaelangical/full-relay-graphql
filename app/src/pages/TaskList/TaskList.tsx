@@ -104,7 +104,6 @@ function TaskList({ navigation, query, relay }: Props) {
 		//	console.log('loadMore: ', err);
 		//});
 	};
-
 	const renderItem = ({ item }) => {
 		const { node } = item;
 
@@ -115,8 +114,15 @@ function TaskList({ navigation, query, relay }: Props) {
 			</CardTask>
 		);
 	};
+	const onChangeInput = (search) => {
+		setSearch(search);
+		const refetchVariables = (fragmentVariables) => ({
+			search: search
+		});
+		relay.refetch(refetchVariables);
+	};
 	const onRefresh = () => {
-		const { tasks } = this.props.query;
+		const { tasks } = query;
 
 		if (relay.isLoading()) {
 			return;
@@ -139,27 +145,31 @@ function TaskList({ navigation, query, relay }: Props) {
 				<Searchbar
 					placeholder="Search..."
 					onChangeText={(query) => {
-						setSearch(query);
+						onChangeInput(query);
 					}}
 					value={search}
 					style={{ marginBottom: 20 }}
-					icon={{
-						source: { uri: 'https://avatars0.githubusercontent.com/u/17571969?v=3&s=400' },
-						direction: 'rtl'
-					}}
+					// icon={{
+					// 	source: { uri: 'https://avatars0.githubusercontent.com/u/17571969?v=3&s=400' },
+					// 	direction: 'rtl'
+					// }}
 				/>
 			</ViewTopSearch>
-			<FlatList
-				style={{ flex: 1, width: width }}
-				data={tasks && tasks.edges}
-				renderItem={renderItem}
-				keyExtractor={(item) => item.node.id}
-				onEndReached={onEndReached}
-				onRefresh={onRefresh}
-				refreshing={isFetchingTop}
-				ItemSeparatorComponent={() => <View style={styles.separator} />}
-				//ListFooterComponent={this.renderFooter}
-			/>
+			{tasks && tasks.edges ? (
+				<FlatList
+					style={{ flex: 1, width: width }}
+					data={tasks && tasks.edges}
+					renderItem={renderItem}
+					keyExtractor={(item) => item.node.id}
+					onEndReached={onEndReached}
+					onRefresh={onRefresh}
+					refreshing={isFetchingTop}
+					ItemSeparatorComponent={() => <View style={styles.separator} />}
+					//ListFooterComponent={this.renderFooter}
+				/>
+			) : (
+				<Title>Empty</Title>
+			)}
 			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
 				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
 			</ButtonAddNewTask>
@@ -200,7 +210,7 @@ const TaskListRefetchContainer = createRefetchContainer(
 	},
 	graphql`
 		query TaskListRefetchContainerQuery($count: Int, $cursor: String, $search: String) {
-			...TaskList_query @arguments(count: $count, cursor: $cursor, search: $search)
+			...TaskList_query
 		}
 	`
 );
@@ -263,10 +273,10 @@ const TaskListRefetchContainer = createRefetchContainer(
 export default createQueryRendererModern(TaskListRefetchContainer, TaskList, {
 	query: graphql`
 		query TaskListQuery($count: Int!, $cursor: String, $search: String) {
-			...TaskList_query @arguments(search: $search)
+			...TaskList_query
 		}
 	`,
-	variables: { cursor: null, count: 1, search: 'Hs' }
+	variables: { cursor: null, count: 1 }
 });
 
 const styles = StyleSheet.create({

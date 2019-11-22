@@ -63,9 +63,17 @@ type TaskArgs = ConnectionArguments & {
 	search?: string;
 };
 export const loadTasks = async (context: GraphQLContext, args: TaskArgs) => {
-	const where = args.search ? { name: { $regex: new RegExp(`^${args.search}`, 'ig') } } : {};
+	console.log('args');
+	console.log(args.search);
+	const where =
+		args.search !== undefined && args.search !== null && args.search !== ''
+			? { name: { $regex: new RegExp(`^${args.search}`, 'ig') } }
+			: {};
 	const tasks = TaskModel.find(where, { _id: 1 }).sort({ createdAt: -1 });
+	// const tasks = args.search !== '' ? TaskModel.find(where, { _id: 1 }).sort({ createdAt: -1 }) : TaskModel.find();
 
+	console.log('tasks');
+	console.log(tasks);
 	return connectionFromMongoCursor({
 		cursor: tasks,
 		context,
