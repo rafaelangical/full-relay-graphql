@@ -46,3 +46,18 @@ Run on device or simulator
 ```
 yarn android or ios
 ```
+
+## Stack tech
+### Server
+- Relay
+- GraphQL
+- Node
+- MongoDB
+- TypeScript
+
+### Client
+- React
+- React Native
+- Yup
+- Formik
+- TypeScript
