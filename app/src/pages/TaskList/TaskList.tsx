@@ -21,7 +21,7 @@ import { TaskList_query } from './__generated__/TaskList_query.graphql';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
-
+import Loading from '../../components/Loading';
 const { width, height } = Dimensions.get('window');
 
 const Wrapper = styled.View`
@@ -94,20 +94,16 @@ type Props = RelayProps & TaskListProps;
 
 function TaskList({ navigation, query, relay }: Props) {
 	const { tasks, me } = query;
-	console.log(tasks);
 	// console.warn(me);
 	// const [ isFetchingTop, setIsFetchingTop ] = useState(false);
 	const [ search, setSearch ] = useState('');
 	const [ data, setData ] = useState([]);
 	const [ empty, setEmpty ] = useState(false);
+	const [ loading, setLoading ] = useState(false);
 	useEffect(
 		() => {
-			// pass props to state
+			console.log('TASK_LIST: RE-RENDER');
 			setData(tasks.edges);
-			// console.warn(data);
-			return () => {
-				console.log('limpou');
-			};
 		},
 		// update state
 		[ data ]
@@ -125,8 +121,7 @@ function TaskList({ navigation, query, relay }: Props) {
 			cursor: endCursor
 		});
 		const renderVariables = {
-			count: total,
-			after: tasks.edges.length
+			count: total
 		};
 		// relay.refetch(refetchVariables, renderVariables);
 		relay.refetch(
@@ -154,7 +149,7 @@ function TaskList({ navigation, query, relay }: Props) {
 		setSearch(e);
 		e !== ''
 			? relay.refetch(
-					{ search: search, count: 20 },
+					{ search: e },
 					null, // 'WFazer'use the refetchVariables as renderVariables
 					(err) => {
 						err && console.log(err);
@@ -186,13 +181,10 @@ function TaskList({ navigation, query, relay }: Props) {
 						borderRadius: 6,
 						width: 386
 					}}
-					// icon={{
-					// 	source: { uri: 'https://avatars0.githubusercontent.com/u/17571969?v=3&s=400' },
-					// 	direction: 'rtl'
-					// }}
 				/>
 			</ViewTopSearch>
 			{/* {empty === false && tasks && tasks.edges.length === 0 && <Title>Empty</Title>} */}
+			{loading && <Loading />}
 			<FlatList
 				style={{ flex: 1, width: width }}
 				data={empty ? data : tasks && tasks.edges}
@@ -207,6 +199,9 @@ function TaskList({ navigation, query, relay }: Props) {
 			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
 				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
 			</ButtonAddNewTask>
+			<TouchableOpacity onPress={() => onEndReached()}>
+				<Text>Ler mais</Text>
+			</TouchableOpacity>
 		</Wrapper>
 	);
 }
