@@ -1,26 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import {
-	AsyncStorage,
-	Text,
-	ScrollView,
-	FlatList,
-	StyleSheet,
-	Dimensions,
-	View,
-	TouchableOpacity,
-	Image,
-	TextInput
-} from 'react-native';
+import { Text, FlatList, StyleSheet, Dimensions, View, TouchableOpacity, Image, TextInput } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
-import { createPaginationContainer, graphql, RelayPaginationProp, createRefetchContainer } from 'react-relay';
+import { graphql, RelayPaginationProp, createRefetchContainer } from 'react-relay';
 import { createQueryRendererModern } from '../../relay';
-import { Searchbar } from 'react-native-paper';
 
 import { TaskList_query } from './__generated__/TaskList_query.graphql';
 
-import Button from '../../components/Button';
-import Input from '../../components/Input';
 import Loading from '../../components/Loading';
 const { width, height } = Dimensions.get('window');
 
@@ -185,17 +171,17 @@ function TaskList({ navigation, query, relay }: Props) {
 			</ViewTopSearch>
 			{/* {empty === false && tasks && tasks.edges.length === 0 && <Title>Empty</Title>} */}
 			{loading && <Loading />}
-			<FlatList
-				style={{ flex: 1, width: width }}
-				data={empty ? data : tasks && tasks.edges}
-				renderItem={renderItem}
-				keyExtractor={(item) => item.node.id}
-				onEndReached={onEndReached}
-				// onRefresh={onRefresh}
-				// refreshing={isFetchingTop}
-				ItemSeparatorComponent={() => <View style={styles.separator} />}
-				//ListFooterComponent={this.renderFooter}
-			/>
+			<View style={{ flex: 1 }}>
+				<FlatList
+					style={{ flex: 1 }}
+					data={empty ? data : tasks && tasks.edges}
+					renderItem={renderItem}
+					keyExtractor={(item) => item.node.id}
+					onEndReached={onEndReached}
+					onEndReachedThreshold={0.5}
+					ItemSeparatorComponent={() => <View style={styles.separator} />}
+				/>
+			</View>
 			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
 				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
 			</ButtonAddNewTask>
@@ -245,61 +231,6 @@ const TaskListRefetchContainer = createRefetchContainer(
 	`
 );
 
-// const TaskListPaginationContainer = createPaginationContainer(
-// 	TaskList,
-// 	{
-// 		query: graphql`
-// 			fragment TaskList_query on Query {
-// 				tasks(first: $count, after: $cursor, search: $search) @connection(key: "TaskList_tasks") {
-// 					pageInfo {
-// 						hasNextPage
-// 						endCursor
-// 					}
-// 					edges {
-// 						node {
-// 							id
-// 							_id
-// 							name
-// 							description
-// 						}
-// 					}
-// 				}
-// 				me {
-// 					id
-// 					_id
-// 					name
-// 					email
-// 					active
-// 				}
-// 			}
-// 		`
-// 	},
-// 	{
-// 		direction: 'forward',
-// 		getConnectionFromProps(props) {
-// 			return props.query && props.query.tasks;
-// 		},
-// 		getFragmentVariables(prevVars, totalCount) {
-// 			return {
-// 				...prevVars,
-// 				count: totalCount
-// 			};
-// 		},
-// 		getVariables(props, { count, cursor, search }, fragmentVariables) {
-// 			return {
-// 				count,
-// 				cursor,
-// 				search
-// 			};
-// 		},
-// 		variables: { cursor: null },
-// 		query: graphql`
-// 			query TaskListPaginationQuery($count: Int!, $cursor: String, $search: String) {
-// 				...TaskList_query
-// 			}
-// 		`
-// 	}
-// );
 export default createQueryRendererModern(TaskListRefetchContainer, TaskList, {
 	query: graphql`
 		query TaskListQuery($count: Int!, $cursor: String, $search: String) {
