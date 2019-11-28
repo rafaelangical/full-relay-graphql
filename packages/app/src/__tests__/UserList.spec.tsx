@@ -9,42 +9,41 @@ import UserList from '../UserList';
 queryMock.setup(GRAPHQL_URL);
 
 const data = {
-  users: {
-    pageInfo: {
-      hasNextPage: false,
-      endCursor: 'bW9uZ286MA==',
-    },
-    edges: [
-      {
-        cursor: 'bW9uZ286MA==',
-        node: {
-          __typename: 'User',
-          id: 'VXNlcjo1YmNmNDgxZTk0ZTg2MDA3ZWM5MTUxN2Q=',
-          name: 'username',
-        },
-      },
-    ],
-  },
+	users: {
+		pageInfo: {
+			hasNextPage: false,
+			endCursor: 'bW9uZ286MA=='
+		},
+		edges: [
+			{
+				cursor: 'bW9uZ286MA==',
+				node: {
+					__typename: 'User',
+					id: 'VXNlcjo1YmNmNDgxZTk0ZTg2MDA3ZWM5MTUxN2Q=',
+					name: 'username'
+				}
+			}
+		]
+	}
 };
 
 beforeEach(() => {
-  queryMock.reset();
+	queryMock.reset();
 });
 
 it('render UserList', async () => {
-  try {
+	try {
+		queryMock.mockQuery({
+			name: 'UserListQuery',
+			data
+		});
 
-    queryMock.mockQuery({
-      name: 'UserListQuery',
-      data,
-    });
+		const r = render(<UserList />);
 
-    const r = render(<UserList/>);
+		await waitForElement(() => r.getByText('username'));
 
-    await waitForElement(() => r.getByText('username'));
-
-    expect(r.getByText('username')).toBe(null);
-  } catch (err) {
-    console.log('err: ', err);
-  }
+		expect(r.getByText('username')).toBe(null);
+	} catch (err) {
+		console.log('err: ', err);
+	}
 });

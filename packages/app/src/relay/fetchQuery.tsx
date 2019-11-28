@@ -14,8 +14,10 @@ export const GRAPHQL_URL = 'http://192.168.1.142:5000/graphql';
 const fetchQuery = async (request: RequestNode, variables: Variables, uploadables: UploadableMap) => {
 	try {
 		const body = getRequestBody(request, variables, uploadables);
+		const token = await AsyncStorage.getItem('TOKEN');
 		const headers = {
-			...getHeaders(uploadables)
+			...getHeaders(uploadables),
+			Authorization: token
 		};
 
 		const response = await fetchWithRetries(GRAPHQL_URL, {

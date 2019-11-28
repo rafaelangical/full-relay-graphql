@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {
 	AsyncStorage,
@@ -9,7 +9,8 @@ import {
 	Dimensions,
 	View,
 	TouchableOpacity,
-	Image
+	Image,
+	TextInput
 } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 import { createPaginationContainer, graphql, RelayPaginationProp, createRefetchContainer } from 'react-relay';
@@ -57,6 +58,7 @@ const ViewTopSearch = styled.View`
 	width: ${width};
 	height: 150;
 	padding-horizontal: 20;
+	margin-bottom: 10;
 `;
 const ProductName = styled.Text`
 	color: #fff;
@@ -92,17 +94,51 @@ type Props = RelayProps & TaskListProps;
 
 function TaskList({ navigation, query, relay }: Props) {
 	const { tasks, me } = query;
+	console.log(tasks);
 	// console.warn(me);
-	const [ isFetchingTop, setIsFetchingTop ] = useState(false);
+	// const [ isFetchingTop, setIsFetchingTop ] = useState(false);
 	const [ search, setSearch ] = useState('');
-	const onEndReached = () => {
-		// /if (!relay.hasMore() || relay.isLoading()) {
-		// /	return;
-		// /}
-		// fetch more 2
-		//relay.loadMore(2, (err) => {
-		//	console.log('loadMore: ', err);
-		//});
+	const [ data, setData ] = useState([]);
+	const [ empty, setEmpty ] = useState(false);
+	useEffect(
+		() => {
+			// pass props to state
+			setData(tasks.edges);
+			// console.warn(data);
+			return () => {
+				console.log('limpou');
+			};
+		},
+		// update state
+		[ data ]
+	);
+	const onEndReached = async () => {
+		console.log('onreached list ');
+		if (!tasks.pageInfo.hasNextPage) return;
+
+		const { endCursor } = tasks.pageInfo;
+
+		const total = tasks.edges.length + 10;
+		const refetchVariables = (fragmentVariables) => ({
+			...fragmentVariables,
+			count: 10,
+			cursor: endCursor
+		});
+		const renderVariables = {
+			count: total,
+			after: tasks.edges.length
+		};
+		// relay.refetch(refetchVariables, renderVariables);
+		relay.refetch(
+			refetchVariables,
+			renderVariables,
+			(error) => {
+				error && console.log('onEndReached: ', error);
+			},
+			{
+				force: false
+			}
+		);
 	};
 	const renderItem = ({ item }) => {
 		const { node } = item;
@@ -114,25 +150,19 @@ function TaskList({ navigation, query, relay }: Props) {
 			</CardTask>
 		);
 	};
-	const onChangeInput = (search) => {
-		setSearch(search);
-		const refetchVariables = (fragmentVariables) => ({
-			search: search
-		});
-		relay.refetch(refetchVariables);
-	};
-	const onRefresh = () => {
-		const { tasks } = query;
-
-		if (relay.isLoading()) {
-			return;
-		}
-
-		setIsFetchingTop(true);
-
-		relay.refetchConnection(tasks.edges.length, (err) => {
-			setIsFetchingTop(false);
-		});
+	const onChangeInput = async (e) => {
+		setSearch(e);
+		e !== ''
+			? relay.refetch(
+					{ search: search, count: 20 },
+					null, // 'WFazer'use the refetchVariables as renderVariables
+					(err) => {
+						err && console.log(err);
+						console.log('Refetch done');
+					},
+					{ force: true } // Assuming we've configured a network layer cache, we want to ensure we fetch the latest data.
+				) && setEmpty(false)
+			: setEmpty(true);
 	};
 	const goToProductDetail = (product) => {
 		navigation.navigate('TaskDetail', { id: product.id });
@@ -142,34 +172,38 @@ function TaskList({ navigation, query, relay }: Props) {
 			<ViewTopSearch>
 				<Title>Hello, {me.name}</Title>
 				<TitleSubTask>Check your tasks 👇</TitleSubTask>
-				<Searchbar
+				<TextInput
 					placeholder="Search..."
-					onChangeText={(query) => {
-						onChangeInput(query);
+					onChangeText={(text) => {
+						onChangeInput(text);
+						console.log('onchage text');
 					}}
 					value={search}
-					style={{ marginBottom: 20 }}
+					style={{
+						marginBottom: 30,
+						borderWidth: 2,
+						borderColor: 'rgba(0,0,0,0.1)',
+						borderRadius: 6,
+						width: 386
+					}}
 					// icon={{
 					// 	source: { uri: 'https://avatars0.githubusercontent.com/u/17571969?v=3&s=400' },
 					// 	direction: 'rtl'
 					// }}
 				/>
 			</ViewTopSearch>
-			{tasks && tasks.edges ? (
-				<FlatList
-					style={{ flex: 1, width: width }}
-					data={tasks && tasks.edges}
-					renderItem={renderItem}
-					keyExtractor={(item) => item.node.id}
-					onEndReached={onEndReached}
-					onRefresh={onRefresh}
-					refreshing={isFetchingTop}
-					ItemSeparatorComponent={() => <View style={styles.separator} />}
-					//ListFooterComponent={this.renderFooter}
-				/>
-			) : (
-				<Title>Empty</Title>
-			)}
+			{/* {empty === false && tasks && tasks.edges.length === 0 && <Title>Empty</Title>} */}
+			<FlatList
+				style={{ flex: 1, width: width }}
+				data={empty ? data : tasks && tasks.edges}
+				renderItem={renderItem}
+				keyExtractor={(item) => item.node.id}
+				onEndReached={onEndReached}
+				// onRefresh={onRefresh}
+				// refreshing={isFetchingTop}
+				ItemSeparatorComponent={() => <View style={styles.separator} />}
+				//ListFooterComponent={this.renderFooter}
+			/>
 			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
 				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
 			</ButtonAddNewTask>
@@ -184,9 +218,10 @@ const TaskListRefetchContainer = createRefetchContainer(
 				@argumentDefinitions(
 					count: { type: "Int", defaultValue: 10 }
 					cursor: { type: "String" }
-					search: { type: "String" }
+					search: { type: "String", defaultValue: "" }
 				) {
-				tasks(first: $count, after: $cursor, search: $search) @connection(key: "TaskList_tasks") {
+				tasks(first: $count, after: $cursor, search: $search)
+					@connection(key: "TaskList_tasks", filters: ["search"]) {
 					pageInfo {
 						hasNextPage
 						endCursor
@@ -210,7 +245,7 @@ const TaskListRefetchContainer = createRefetchContainer(
 	},
 	graphql`
 		query TaskListRefetchContainerQuery($count: Int, $cursor: String, $search: String) {
-			...TaskList_query
+			...TaskList_query @arguments(count: $count, cursor: $cursor, search: $search)
 		}
 	`
 );
@@ -276,7 +311,7 @@ export default createQueryRendererModern(TaskListRefetchContainer, TaskList, {
 			...TaskList_query
 		}
 	`,
-	variables: { cursor: null, count: 1 }
+	variables: { cursor: null, count: 10 }
 });
 
 const styles = StyleSheet.create({

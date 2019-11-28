@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, AsyncStorage, Alert } from 'react-native';
+import { Dimensions, Image } from 'react-native';
 import styled from 'styled-components';
 
 import Button from '../../components/Button';
@@ -15,53 +15,72 @@ interface Props {
 	navigation: NavigationScreenProp<{}>;
 	query: UserDetail_query;
 }
+const { width, height } = Dimensions.get('window');
 
 const Wrapper = styled.View`
 	flex: 1;
 	align-items: center;
-	justify-content: flex-end;
-`;
-const TextWelcome = styled.Text`
-	font-size: 30;
-	color: red;
-	position: absolute;
-	top: 30%;
-	margin-bottom: 50%;
+	justify-content: flex-start;
 `;
 const TextProfile = styled.Text`
-	font-size: 35;
-	color: darkblue;
-	top: 20%;
-	position: absolute;
-	margin-bottom: 50%;
-	letter-spacing: 10;
+	color: #33334f;
+	letter-spacing: 1;
+	font-weight: bold;
+	font-size: 28px;
+`;
+const UserTextContainer = styled.View`
+	width: ${width};
+	height: ${height * 0.2};
+	justify-content: center;
+	align-items: center;
+	background-color: #eee;
 `;
 const ViewButton = styled.View`
-	width: 100%;
-	height: 50%;
-	align-self: flex-end;
+	width: ${width};
+	height: ${height * 0.4};
+	justify-content: space-between;
+	align-items: center;
+`;
+const TextButtons = styled.Text`
+	color: #fff;
+	fontSize: 24;
+	font-weight: bold;
+`;
+const ButtonAddNewTask = styled.TouchableOpacity`
+	height: 70;
+	width: 70;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: #33334f;
+	position: absolute;
+	bottom: 23;
+	right: 19;
+	border-radius: 60;
 `;
 
 function UserDetail({ navigation, query }: Props) {
 	const { user } = query;
 	return (
 		<Wrapper>
-			<TextProfile>Perfil</TextProfile>
-			<TextWelcome>Olá {user.name}</TextWelcome>
+			<UserTextContainer>
+				<TextProfile>Olá, {user.name}</TextProfile>
+				<TextProfile>{user.email}</TextProfile>
+			</UserTextContainer>
 			<ViewButton>
-				<Button onPress={() => navigation.navigate('UserList')}>
-					<Text>Lista de usuários</Text>
+				<Button onPress={() => navigation.navigate('TaskList')}>
+					<TextButtons>List of Products</TextButtons>
 				</Button>
-				<Button onPress={() => navigation.navigate('ProductList')}>
-					<Text>Lista de produtos</Text>
-				</Button>
-				<Button onPress={() => navigation.navigate('ProductCreate')}>
-					<Text>Cadastro de produtos</Text>
+				<Button onPress={() => navigation.navigate('TaskCreate')}>
+					<TextButtons>Add products</TextButtons>
 				</Button>
 				<Button onPress={() => navigation.navigate('Dashboard')}>
-					<Text>Dashboard</Text>
+					<TextButtons>Main</TextButtons>
 				</Button>
 			</ViewButton>
+			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
+				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
+			</ButtonAddNewTask>
 		</Wrapper>
 	);
 }
@@ -70,6 +89,7 @@ const UserDetailFragmentContainer = createFragmentContainer(UserDetail, {
 	query: graphql`
 		fragment UserDetail_query on Query {
 			user(id: $id) {
+				_id
 				id
 				name
 				email

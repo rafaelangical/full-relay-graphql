@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, Alert } from 'react-native';
-import styled from 'styled-components';
+import React, { useState, Fragment } from 'react';
+import { View, Text, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import styled from 'styled-components';
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -18,31 +20,29 @@ interface Props {
 const Wrapper = styled.View`
 	flex: 1;
 	align-items: center;
-	justify-content: flex-end;
-`;
-const TextWelcome = styled.Text`
-	font-size: 30;
-	color: red;
-	position: absolute;
-	top: 30%;
-	margin-bottom: 50%;
+	justify-content: flex-start;
+	background-color: #fff;
 `;
 const ViewButton = styled.View`
 	width: 100%;
-	height: 150;
-	align-self: flex-end;
+	height: 68;
+	marginTop: 156;
+	justify-content: center;
+	align-items: center;
 `;
-
+const SignInButton = styled.TouchableHighlight`
+	width: 386;
+	height: 20;
+	justify-content: center;
+	align-items: flex-end;
+`;
+const TextButtonLogin = styled.Text`
+	color: #fff;
+	fontSize: 24;
+	font-weight: bold;
+`;
 export default function Login({ navigation }: Props) {
-	const [ email, setEmail ] = useState('');
-	const [ password, setPassword ] = useState('');
-
-	const handleLogin = (email, password) => {
-		const input = {
-			email,
-			password
-		};
-
+	const handleLogin = (values) => {
 		const onCompleted = (response: UserLoginWithEmailMutationResponse) => {
 			if (!response.UserLoginWithEmail) return;
 
@@ -51,7 +51,6 @@ export default function Login({ navigation }: Props) {
 			error && Alert.alert(error);
 
 			token && AsyncStorage.setItem('TOKEN', token) && navigation.navigate('Dashboard');
-			console.warn(token);
 		};
 
 		const onError = () => {
@@ -60,22 +59,55 @@ export default function Login({ navigation }: Props) {
 			console.log('onError');
 		};
 
-		UserLoginWithEmailMutation.commit(input, onCompleted, onError);
+		UserLoginWithEmailMutation.commit(values, onCompleted, onError);
 	};
 
 	return (
 		<Wrapper>
-			<TextWelcome>Bem vindo</TextWelcome>
-			<Input placeholder="email" value={email} onChangeText={(email) => setEmail(email)} />
-			<Input placeholder="password" secureTextEntry value={password} onChangeText={(pass) => setPassword(pass)} />
-			<ViewButton>
-				<Button onPress={() => handleLogin(email, password)}>
-					<Text>Login</Text>
-				</Button>
-				<Button onPress={() => navigation.navigate('UserCreate')}>
-					<Text>SignIn</Text>
-				</Button>
-			</ViewButton>
+			<Image
+				style={{ width: 222, height: 261.6, marginTop: 37, marginBottom: 45 }}
+				source={require('../../assets/imgs/loginImage.png')}
+			/>
+			<Formik
+				initialValues={{ email: '', password: '' }}
+				onSubmit={(values) => handleLogin(values)}
+				validationSchema={yup.object().shape({
+					email: yup.string().email().required(),
+					password: yup.string().min(6).required()
+				})}
+			>
+				{({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
+					<Fragment>
+						{touched.email &&
+						errors.email && <Text style={{ fontSize: 14, color: 'red' }}>{errors.email}</Text>}
+						<Input
+							value={values.email}
+							onChangeText={handleChange('email')}
+							onBlur={() => setFieldTouched('email')}
+							placeholder="email"
+						/>
+						{touched.password &&
+						errors.password && <Text style={{ fontSize: 14, color: 'red' }}>{errors.password}</Text>}
+						<Input
+							value={values.password}
+							onChangeText={handleChange('password')}
+							placeholder="password"
+							onBlur={() => setFieldTouched('password')}
+							secureTextEntry={true}
+						/>
+						<SignInButton onPress={() => navigation.navigate('UserCreate')}>
+							<Text style={{ fontSize: 17, color: '#BCBCBC' }}>
+								No account? <Text style={{ color: '#1EB36B' }}>Signup</Text>
+							</Text>
+						</SignInButton>
+						<ViewButton>
+							<Button onPress={handleSubmit}>
+								<TextButtonLogin>Login</TextButtonLogin>
+							</Button>
+						</ViewButton>
+					</Fragment>
+				)}
+			</Formik>
 		</Wrapper>
 	);
 }

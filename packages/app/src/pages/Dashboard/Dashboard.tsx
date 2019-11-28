@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
-
+import { View, Text, Alert } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import styled from 'styled-components';
 
 import Button from '../../components/Button';
 
 import { NavigationScreenProp } from 'react-navigation';
+import Animation from './Animation';
+import Loading from '../../components/Loading';
 
 interface Props {
 	navigation: NavigationScreenProp<{}>;
@@ -14,36 +16,55 @@ interface Props {
 const Wrapper = styled.View`
 	flex: 1;
 	align-items: center;
-	justify-content: flex-end;
+	justify-content: flex-start;
+	background-color: #fff;
 `;
 const TextWelcome = styled.Text`
 	font-size: 30;
 	color: red;
 	position: absolute;
-	top: 30%;
-	margin-bottom: 50%;
+	top: 50%;
+	letter-spacing: 5;
+	margin-horizontal: 20;
+`;
+const TextButton = styled.Text`
+	font-size: 14;
+	color: white;
 `;
 const ViewButton = styled.View`
 	width: 100%;
-	height: 150;
-	align-self: flex-end;
+	height: 220;
+	align-items: center;
+	justify-content: space-around;
+	margin-bottom: 23;
 `;
 
 export default function Dashboard({ navigation }: Props) {
+	const [ loading, setLoading ] = useState(true);
+	setTimeout(function() {
+		setLoading(false);
+	}, 500);
 	return (
 		<Wrapper>
-			<TextWelcome>Bem vindo</TextWelcome>
-			<ViewButton>
-				<Button onPress={() => navigation.navigate('UserList')}>
-					<Text>Lista de usuários</Text>
-				</Button>
-				<Button onPress={() => navigation.navigate('ProductList')}>
-					<Text>Lista de produtos</Text>
-				</Button>
-				<Button onPress={() => navigation.navigate('ProductCreate')}>
-					<Text>Cadastro de produtos</Text>
-				</Button>
-			</ViewButton>
+			{loading ? (
+				<Loading />
+			) : (
+				<React.Fragment>
+					<TextWelcome>Welcome</TextWelcome>
+					<Animation />
+					<ViewButton>
+						<Button onPress={() => navigation.navigate('TaskList')}>
+							<TextButton>List of Tasks</TextButton>
+						</Button>
+						<Button onPress={() => navigation.navigate('TaskCreate')}>
+							<TextButton>Add Task</TextButton>
+						</Button>
+						<Button onPress={() => navigation.navigate('Login')}>
+							<TextButton>Logout</TextButton>
+						</Button>
+					</ViewButton>
+				</React.Fragment>
+			)}
 		</Wrapper>
 	);
 }

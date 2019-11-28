@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { View, Text, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import styled from 'styled-components';

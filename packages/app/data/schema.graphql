@@ -2,7 +2,7 @@ type Mutation {
   UserChangePassword(input: UserChangePasswordInput!): UserChangePasswordPayload
   UserLoginWithEmail(input: UserLoginWithEmailInput!): UserLoginWithEmailPayload
   UserRegisterWithEmail(input: UserRegisterWithEmailInput!): UserRegisterWithEmailPayload
-  ProductRegister(input: ProductRegisterInput!): ProductRegisterPayload
+  TaskRegister(input: TaskRegisterInput!): TaskRegisterPayload
 }
 
 """An object with an ID"""
@@ -26,24 +26,40 @@ type PageInfoExtended {
   endCursor: String
 }
 
-"""Product data"""
-type Product implements Node {
+"""The root of all... queries"""
+type Query {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+  me: User
+  user(id: ID!): User
+  task(id: ID!): Task
+  users(after: String, first: Int, before: String, last: Int, search: String): UserConnection
+  tasks(after: String, first: Int, before: String, last: Int, search: String): TaskConnection
+}
+
+type Subscription {
+  UserAdded: UserAddedPayload
+  TaskAdded: TaskAddedPayload
+}
+
+"""Task data"""
+type Task implements Node {
   """The ID of an object"""
   id: ID!
   _id: String
   name: String
   description: String
-  barcode: String
-  price: Float
-  qtd: Int
 }
 
-type ProductAddedPayload {
-  productEdge: ProductEdge
+type TaskAddedPayload {
+  taskEdge: TaskEdge
 }
 
 """A connection to a list of items."""
-type ProductConnection {
+type TaskConnection {
   """Number of items in this connection"""
   count: Int!
 
@@ -65,49 +81,28 @@ type ProductConnection {
   pageInfo: PageInfoExtended!
 
   """A list of edges."""
-  edges: [ProductEdge]!
+  edges: [TaskEdge]!
 }
 
 """An edge in a connection."""
-type ProductEdge {
+type TaskEdge {
   """The item at the end of the edge"""
-  node: Product!
+  node: Task!
 
   """A cursor for use in pagination"""
   cursor: String!
 }
 
-input ProductRegisterInput {
+input TaskRegisterInput {
   name: String!
   description: String!
-  barcode: String!
-  price: Float!
-  qtd: Int!
   clientMutationId: String
 }
 
-type ProductRegisterPayload {
-  ok: String
+type TaskRegisterPayload {
+  task: String
   error: String
   clientMutationId: String
-}
-
-"""The root of all... queries"""
-type Query {
-  """Fetches an object given its ID"""
-  node(
-    """The ID of an object"""
-    id: ID!
-  ): Node
-  me: User
-  user(id: ID!): User
-  users(after: String, first: Int, before: String, last: Int, search: String): UserConnection
-  products(after: String, first: Int, before: String, last: Int, search: String): ProductConnection
-}
-
-type Subscription {
-  UserAdded: UserAddedPayload
-  ProductAdded: ProductAddedPayload
 }
 
 """User data"""
@@ -180,6 +175,7 @@ input UserLoginWithEmailInput {
 }
 
 type UserLoginWithEmailPayload {
+  id: String
   token: String
   error: String
   clientMutationId: String
