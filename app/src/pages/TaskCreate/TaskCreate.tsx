@@ -1,8 +1,7 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { Alert, Dimensions, Text } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -57,7 +56,6 @@ export interface TaskRegisterProps {
 function TaskCreate({ navigation }: TaskRegisterProps) {
 	function handleRegister(values) {
 		const onCompleted = (response: TaskRegisterMutationResponse) => {
-			console.warn('oncompleted create product');
 			if (!response.TaskRegister) return;
 
 			const { error } = response.TaskRegister;
@@ -70,7 +68,6 @@ function TaskCreate({ navigation }: TaskRegisterProps) {
 
 		const onError = (err) => {
 			Alert.alert(err);
-			console.warn('create product error');
 			console.log('onError' + err);
 		};
 
@@ -100,7 +97,9 @@ function TaskCreate({ navigation }: TaskRegisterProps) {
 							placeholder="name"
 						/>
 						{touched.description &&
-						errors.description && <Text style={{ fontSize: 14, color: 'red' }}>{errors.description}</Text>}
+						errors.description && (
+							<Text style={{ fontSize: 14, color: 'red', marginTop: -15 }}>{errors.description}</Text>
+						)}
 						<TextArea
 							value={values.description}
 							onChangeText={handleChange('description')}

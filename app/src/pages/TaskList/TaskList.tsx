@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import styled from 'styled-components';
 import { Text, FlatList, StyleSheet, Dimensions, View, TouchableOpacity, Image, TextInput } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
@@ -68,6 +68,18 @@ const TitleSubTask = styled.Text`
 	margin-bottom: 15;
 	font-weight: 500;
 `;
+const ButtonReturnTask = styled.TouchableOpacity`
+	height: 70;
+	width: 70;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: #33334f;
+	position: absolute;
+	bottom: 23;
+	right: 95;
+	border-radius: 60;
+`;
 export interface TaskListProps {
 	navigation: NavigationScreenProp<{}>;
 }
@@ -80,26 +92,17 @@ type Props = RelayProps & TaskListProps;
 
 function TaskList({ navigation, query, relay }: Props) {
 	const { tasks, me } = query;
-	// console.warn(me);
-	// const [ isFetchingTop, setIsFetchingTop ] = useState(false);
 	const [ search, setSearch ] = useState('');
-	const [ data, setData ] = useState([]);
-	const [ empty, setEmpty ] = useState(false);
-	const [ loading, setLoading ] = useState(false);
 	useEffect(
 		() => {
 			console.log('TASK_LIST: RE-RENDER');
-			setData(tasks.edges);
 		},
-		// update state
-		[ data ]
+		// update tasks
+		[ tasks ]
 	);
 	const onEndReached = async () => {
-		console.log('onreached list ');
 		if (!tasks.pageInfo.hasNextPage) return;
-
 		const { endCursor } = tasks.pageInfo;
-
 		const total = tasks.edges.length + 10;
 		const refetchVariables = (fragmentVariables) => ({
 			...fragmentVariables,
@@ -133,62 +136,61 @@ function TaskList({ navigation, query, relay }: Props) {
 	};
 	const onChangeInput = async (e) => {
 		setSearch(e);
-		e !== ''
-			? relay.refetch(
-					{ search: e },
-					null, // 'WFazer'use the refetchVariables as renderVariables
-					(err) => {
-						err && console.log(err);
-						console.log('Refetch done');
-					},
-					{ force: true } // Assuming we've configured a network layer cache, we want to ensure we fetch the latest data.
-				) && setEmpty(false)
-			: setEmpty(true);
+		relay.refetch(
+			{ search: e },
+			null, // 'WFazer'use the refetchVariables as renderVariables
+			(err) => {
+				err && console.log(err);
+				console.log('Refetch done');
+			},
+			{ force: true } // Assuming we've configured a network layer cache, we want to ensure we fetch the latest data.
+		);
 	};
 	const goToProductDetail = (product) => {
 		navigation.navigate('TaskDetail', { id: product.id });
 	};
 	return (
-		<Wrapper>
-			<ViewTopSearch>
-				<Title>Hello, {me.name}</Title>
-				<TitleSubTask>Check your tasks 👇</TitleSubTask>
-				<TextInput
-					placeholder="Search..."
-					onChangeText={(text) => {
-						onChangeInput(text);
-						console.log('onchage text');
-					}}
-					value={search}
-					style={{
-						marginBottom: 30,
-						borderWidth: 2,
-						borderColor: 'rgba(0,0,0,0.1)',
-						borderRadius: 6,
-						width: 386
-					}}
-				/>
-			</ViewTopSearch>
-			{/* {empty === false && tasks && tasks.edges.length === 0 && <Title>Empty</Title>} */}
-			{loading && <Loading />}
-			<View style={{ flex: 1 }}>
-				<FlatList
-					style={{ flex: 1 }}
-					data={empty ? data : tasks && tasks.edges}
-					renderItem={renderItem}
-					keyExtractor={(item) => item.node.id}
-					onEndReached={onEndReached}
-					onEndReachedThreshold={0.5}
-					ItemSeparatorComponent={() => <View style={styles.separator} />}
-				/>
-			</View>
-			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
-				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
-			</ButtonAddNewTask>
-			<TouchableOpacity onPress={() => onEndReached()}>
-				<Text>Ler mais</Text>
-			</TouchableOpacity>
-		</Wrapper>
+		<Fragment>
+			<Wrapper>
+				<ViewTopSearch>
+					<Title>Hello, {me.name}</Title>
+					<TitleSubTask>Check your tasks 👇</TitleSubTask>
+					<TextInput
+						placeholder="Search..."
+						onChangeText={(text) => {
+							onChangeInput(text);
+							console.log('onchage text');
+						}}
+						value={search}
+						style={{
+							marginBottom: 30,
+							borderWidth: 2,
+							borderColor: 'rgba(0,0,0,0.1)',
+							borderRadius: 6,
+							width: 386
+						}}
+					/>
+				</ViewTopSearch>
+				{tasks && tasks.edges.length === 0 && <Title>Empty</Title>}
+				<View style={{ flex: 1 }}>
+					<FlatList
+						style={{ flex: 1 }}
+						data={tasks && tasks.edges}
+						renderItem={renderItem}
+						keyExtractor={(item) => item.node.id}
+						onEndReached={onEndReached}
+						onEndReachedThreshold={0.3}
+						ItemSeparatorComponent={() => <View style={styles.separator} />}
+					/>
+				</View>
+				<ButtonReturnTask onPress={() => navigation.navigate('Dashboard')}>
+					<Image source={require('../../../src/assets/imgs/home.png')} style={{ width: 35, height: 35 }} />
+				</ButtonReturnTask>
+				<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
+					<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
+				</ButtonAddNewTask>
+			</Wrapper>
+		</Fragment>
 	);
 }
 const TaskListRefetchContainer = createRefetchContainer(

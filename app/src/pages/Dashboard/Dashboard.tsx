@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { View, Text, Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import styled from 'styled-components';
 
@@ -44,6 +43,14 @@ export default function Dashboard({ navigation }: Props) {
 	setTimeout(function() {
 		setLoading(false);
 	}, 500);
+	const logout = async () => {
+		try {
+			await AsyncStorage.removeItem('TOKEN');
+			return navigation.navigate('Login');
+		} catch (exception) {
+			return false;
+		}
+	};
 	return (
 		<Wrapper>
 			{loading ? (
@@ -59,7 +66,7 @@ export default function Dashboard({ navigation }: Props) {
 						<Button onPress={() => navigation.navigate('TaskCreate')}>
 							<TextButton>Add Task</TextButton>
 						</Button>
-						<Button onPress={() => navigation.navigate('Login')}>
+						<Button onPress={() => logout()}>
 							<TextButton>Logout</TextButton>
 						</Button>
 					</ViewButton>

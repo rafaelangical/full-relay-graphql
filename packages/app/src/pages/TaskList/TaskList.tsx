@@ -1,26 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import styled from 'styled-components';
-import {
-	AsyncStorage,
-	Text,
-	ScrollView,
-	FlatList,
-	StyleSheet,
-	Dimensions,
-	View,
-	TouchableOpacity,
-	Image
-} from 'react-native';
+import { Text, FlatList, StyleSheet, Dimensions, View, TouchableOpacity, Image, TextInput } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
-import { createPaginationContainer, graphql, RelayPaginationProp, createRefetchContainer } from 'react-relay';
+import { graphql, RelayPaginationProp, createRefetchContainer } from 'react-relay';
 import { createQueryRendererModern } from '../../relay';
-import { Searchbar } from 'react-native-paper';
 
 import { TaskList_query } from './__generated__/TaskList_query.graphql';
 
-import Button from '../../components/Button';
-import Input from '../../components/Input';
-
+import Loading from '../../components/Loading';
 const { width, height } = Dimensions.get('window');
 
 const Wrapper = styled.View`
@@ -57,6 +44,7 @@ const ViewTopSearch = styled.View`
 	width: ${width};
 	height: 150;
 	padding-horizontal: 20;
+	margin-bottom: 10;
 `;
 const ProductName = styled.Text`
 	color: #fff;
@@ -80,6 +68,18 @@ const TitleSubTask = styled.Text`
 	margin-bottom: 15;
 	font-weight: 500;
 `;
+const ButtonReturnTask = styled.TouchableOpacity`
+	height: 70;
+	width: 70;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: #33334f;
+	position: absolute;
+	bottom: 23;
+	right: 95;
+	border-radius: 60;
+`;
 export interface TaskListProps {
 	navigation: NavigationScreenProp<{}>;
 }
@@ -92,18 +92,37 @@ type Props = RelayProps & TaskListProps;
 
 function TaskList({ navigation, query, relay }: Props) {
 	const { tasks, me } = query;
-	console.log(tasks.edges);
-	// console.warn(me);
-	const [ isFetchingTop, setIsFetchingTop ] = useState(false);
 	const [ search, setSearch ] = useState('');
-	const onEndReached = () => {
-		// /if (!relay.hasMore() || relay.isLoading()) {
-		// /	return;
-		// /}
-		// fetch more 2
-		//relay.loadMore(2, (err) => {
-		//	console.log('loadMore: ', err);
-		//});
+	useEffect(
+		() => {
+			console.log('TASK_LIST: RE-RENDER');
+		},
+		// update tasks
+		[ tasks ]
+	);
+	const onEndReached = async () => {
+		if (!tasks.pageInfo.hasNextPage) return;
+		const { endCursor } = tasks.pageInfo;
+		const total = tasks.edges.length + 10;
+		const refetchVariables = (fragmentVariables) => ({
+			...fragmentVariables,
+			count: 10,
+			cursor: endCursor
+		});
+		const renderVariables = {
+			count: total
+		};
+		// relay.refetch(refetchVariables, renderVariables);
+		relay.refetch(
+			refetchVariables,
+			renderVariables,
+			(error) => {
+				error && console.log('onEndReached: ', error);
+			},
+			{
+				force: false
+			}
+		);
 	};
 	const renderItem = ({ item }) => {
 		const { node } = item;
@@ -116,9 +135,9 @@ function TaskList({ navigation, query, relay }: Props) {
 		);
 	};
 	const onChangeInput = async (e) => {
-		await setSearch(e);
-		await relay.refetch(
-			{ search: search },
+		setSearch(e);
+		relay.refetch(
+			{ search: e },
 			null, // 'WFazer'use the refetchVariables as renderVariables
 			(err) => {
 				err && console.log(err);
@@ -127,74 +146,51 @@ function TaskList({ navigation, query, relay }: Props) {
 			{ force: true } // Assuming we've configured a network layer cache, we want to ensure we fetch the latest data.
 		);
 	};
-	const loadMore = (e) => {
-		setSearch(e);
-		// Increments the number of stories being rendered by 10.
-		const refetchVariables = (fragmentVariables) => ({
-			// count: fragmentVariables.count + 10,
-			search: search
-		});
-		relay.refetch(refetchVariables);
-	};
-	const onRefresh = () => {
-		const { tasks } = query;
-
-		if (relay.isLoading()) {
-			return;
-		}
-
-		setIsFetchingTop(true);
-
-		relay.refetchConnection(tasks.edges.length, (err) => {
-			setIsFetchingTop(false);
-		});
-	};
 	const goToProductDetail = (product) => {
 		navigation.navigate('TaskDetail', { id: product.id });
 	};
 	return (
-		<Wrapper>
-			<ViewTopSearch>
-				<Title>Hello, {me.name}</Title>
-				<TitleSubTask>Check your tasks 👇</TitleSubTask>
-				<Searchbar
-					placeholder="Search..."
-					onChangeText={(query) => {
-						onChangeInput(query);
-					}}
-					value={search}
-					style={{ marginBottom: 20 }}
-					// icon={{
-					// 	source: { uri: 'https://avatars0.githubusercontent.com/u/17571969?v=3&s=400' },
-					// 	direction: 'rtl'
-					// }}
-				/>
-				<TouchableOpacity
-					onPress={() => onChangeInput(search)}
-					style={{ width: 100, height: 60, backgroundColor: 'red', position: 'absolute' }}
-				>
-					<Text>Buscar</Text>
-				</TouchableOpacity>
-			</ViewTopSearch>
-			{tasks && tasks.edges ? (
-				<FlatList
-					style={{ flex: 1, width: width }}
-					data={tasks && tasks.edges}
-					renderItem={renderItem}
-					keyExtractor={(item) => item.node.id}
-					onEndReached={onEndReached}
-					onRefresh={onRefresh}
-					refreshing={isFetchingTop}
-					ItemSeparatorComponent={() => <View style={styles.separator} />}
-					//ListFooterComponent={this.renderFooter}
-				/>
-			) : (
-				<Title>Empty</Title>
-			)}
-			<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
-				<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
-			</ButtonAddNewTask>
-		</Wrapper>
+		<Fragment>
+			<Wrapper>
+				<ViewTopSearch>
+					<Title>Hello, {me.name}</Title>
+					<TitleSubTask>Check your tasks 👇</TitleSubTask>
+					<TextInput
+						placeholder="Search..."
+						onChangeText={(text) => {
+							onChangeInput(text);
+							console.log('onchage text');
+						}}
+						value={search}
+						style={{
+							marginBottom: 30,
+							borderWidth: 2,
+							borderColor: 'rgba(0,0,0,0.1)',
+							borderRadius: 6,
+							width: 386
+						}}
+					/>
+				</ViewTopSearch>
+				{tasks && tasks.edges.length === 0 && <Title>Empty</Title>}
+				<View style={{ flex: 1 }}>
+					<FlatList
+						style={{ flex: 1 }}
+						data={tasks && tasks.edges}
+						renderItem={renderItem}
+						keyExtractor={(item) => item.node.id}
+						onEndReached={onEndReached}
+						onEndReachedThreshold={0.3}
+						ItemSeparatorComponent={() => <View style={styles.separator} />}
+					/>
+				</View>
+				<ButtonReturnTask onPress={() => navigation.navigate('Dashboard')}>
+					<Image source={require('../../../src/assets/imgs/home.png')} style={{ width: 35, height: 35 }} />
+				</ButtonReturnTask>
+				<ButtonAddNewTask onPress={() => navigation.navigate('TaskCreate')}>
+					<Image source={require('../../../src/assets/imgs/add.png')} width={35} height={35} />
+				</ButtonAddNewTask>
+			</Wrapper>
+		</Fragment>
 	);
 }
 const TaskListRefetchContainer = createRefetchContainer(
@@ -205,7 +201,7 @@ const TaskListRefetchContainer = createRefetchContainer(
 				@argumentDefinitions(
 					count: { type: "Int", defaultValue: 10 }
 					cursor: { type: "String" }
-					search: { type: "String" }
+					search: { type: "String", defaultValue: "" }
 				) {
 				tasks(first: $count, after: $cursor, search: $search)
 					@connection(key: "TaskList_tasks", filters: ["search"]) {
@@ -232,73 +228,18 @@ const TaskListRefetchContainer = createRefetchContainer(
 	},
 	graphql`
 		query TaskListRefetchContainerQuery($count: Int, $cursor: String, $search: String) {
-			...TaskList_query
+			...TaskList_query @arguments(count: $count, cursor: $cursor, search: $search)
 		}
 	`
 );
 
-// const TaskListPaginationContainer = createPaginationContainer(
-// 	TaskList,
-// 	{
-// 		query: graphql`
-// 			fragment TaskList_query on Query {
-// 				tasks(first: $count, after: $cursor, search: $search) @connection(key: "TaskList_tasks") {
-// 					pageInfo {
-// 						hasNextPage
-// 						endCursor
-// 					}
-// 					edges {
-// 						node {
-// 							id
-// 							_id
-// 							name
-// 							description
-// 						}
-// 					}
-// 				}
-// 				me {
-// 					id
-// 					_id
-// 					name
-// 					email
-// 					active
-// 				}
-// 			}
-// 		`
-// 	},
-// 	{
-// 		direction: 'forward',
-// 		getConnectionFromProps(props) {
-// 			return props.query && props.query.tasks;
-// 		},
-// 		getFragmentVariables(prevVars, totalCount) {
-// 			return {
-// 				...prevVars,
-// 				count: totalCount
-// 			};
-// 		},
-// 		getVariables(props, { count, cursor, search }, fragmentVariables) {
-// 			return {
-// 				count,
-// 				cursor,
-// 				search
-// 			};
-// 		},
-// 		variables: { cursor: null },
-// 		query: graphql`
-// 			query TaskListPaginationQuery($count: Int!, $cursor: String, $search: String) {
-// 				...TaskList_query
-// 			}
-// 		`
-// 	}
-// );
 export default createQueryRendererModern(TaskListRefetchContainer, TaskList, {
 	query: graphql`
 		query TaskListQuery($count: Int!, $cursor: String, $search: String) {
-			...TaskList_query @arguments(search: $search)
+			...TaskList_query
 		}
 	`,
-	variables: { cursor: null, count: 1, search: 'rafa' }
+	variables: { cursor: null, count: 10 }
 });
 
 const styles = StyleSheet.create({

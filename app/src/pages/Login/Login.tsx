@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { View, Text, Alert, Image } from 'react-native';
+import { Text, Alert, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import styled from 'styled-components';
 import { Formik } from 'formik';
@@ -19,6 +19,8 @@ interface Props {
 
 const Wrapper = styled.View`
 	flex: 1;
+	width: 100%;
+	height: 100%;
 	align-items: center;
 	justify-content: flex-start;
 	background-color: #fff;
@@ -26,6 +28,7 @@ const Wrapper = styled.View`
 const ViewButton = styled.View`
 	width: 100%;
 	height: 68;
+	flex: 1;
 	marginTop: 156;
 	justify-content: center;
 	align-items: center;
@@ -55,7 +58,6 @@ export default function Login({ navigation }: Props) {
 
 		const onError = () => {
 			Alert.alert('Verifique os dados e tente novamente');
-			console.warn('login error');
 			console.log('onError');
 		};
 
@@ -63,51 +65,81 @@ export default function Login({ navigation }: Props) {
 	};
 
 	return (
-		<Wrapper>
-			<Image
-				style={{ width: 222, height: 261.6, marginTop: 37, marginBottom: 45 }}
-				source={require('../../assets/imgs/loginImage.png')}
-			/>
-			<Formik
-				initialValues={{ email: '', password: '' }}
-				onSubmit={(values) => handleLogin(values)}
-				validationSchema={yup.object().shape({
-					email: yup.string().email().required(),
-					password: yup.string().min(6).required()
-				})}
+		<ScrollView
+			style={{ flex: 1, backgroundColor: '#Fff' }}
+			contentContainerStyle={{
+				width: '100%',
+				height: '100%',
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'flex-start'
+			}}
+		>
+			<KeyboardAvoidingView
+				style={{
+					flex: 1,
+					height: '100%',
+					width: '100%',
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'flex-start'
+				}}
+				keyboardVerticalOffset={0}
+				behavior={'position'}
 			>
-				{({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
-					<Fragment>
-						{touched.email &&
-						errors.email && <Text style={{ fontSize: 14, color: 'red' }}>{errors.email}</Text>}
-						<Input
-							value={values.email}
-							onChangeText={handleChange('email')}
-							onBlur={() => setFieldTouched('email')}
-							placeholder="email"
-						/>
-						{touched.password &&
-						errors.password && <Text style={{ fontSize: 14, color: 'red' }}>{errors.password}</Text>}
-						<Input
-							value={values.password}
-							onChangeText={handleChange('password')}
-							placeholder="password"
-							onBlur={() => setFieldTouched('password')}
-							secureTextEntry={true}
-						/>
-						<SignInButton onPress={() => navigation.navigate('UserCreate')}>
-							<Text style={{ fontSize: 17, color: '#BCBCBC' }}>
-								No account? <Text style={{ color: '#1EB36B' }}>Signup</Text>
-							</Text>
-						</SignInButton>
-						<ViewButton>
-							<Button onPress={handleSubmit}>
-								<TextButtonLogin>Login</TextButtonLogin>
-							</Button>
-						</ViewButton>
-					</Fragment>
-				)}
-			</Formik>
-		</Wrapper>
+				<Wrapper>
+					<Image
+						style={{ width: 222, height: 261.6, marginTop: 37, marginBottom: 45 }}
+						source={require('../../assets/imgs/loginImage.png')}
+					/>
+					<Formik
+						initialValues={{ email: '', password: '' }}
+						onSubmit={(values) => handleLogin(values)}
+						validationSchema={yup.object().shape({
+							email: yup.string().email().required(),
+							password: yup.string().min(6).required()
+						})}
+					>
+						{({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
+							<Fragment>
+								{touched.email &&
+								errors.email && (
+									<Text style={{ fontSize: 14, color: 'red', marginTop: -15 }}>{errors.email}</Text>
+								)}
+								<Input
+									value={values.email}
+									onChangeText={handleChange('email')}
+									onBlur={() => setFieldTouched('email')}
+									placeholder="email"
+								/>
+								{touched.password &&
+								errors.password && (
+									<Text style={{ fontSize: 14, color: 'red', marginTop: -15 }}>
+										{errors.password}
+									</Text>
+								)}
+								<Input
+									value={values.password}
+									onChangeText={handleChange('password')}
+									placeholder="password"
+									onBlur={() => setFieldTouched('password')}
+									secureTextEntry={true}
+								/>
+								<SignInButton onPress={() => navigation.navigate('UserCreate')}>
+									<Text style={{ fontSize: 17, color: '#BCBCBC' }}>
+										No account? <Text style={{ color: '#1EB36B' }}>Signup</Text>
+									</Text>
+								</SignInButton>
+								<ViewButton>
+									<Button onPress={handleSubmit}>
+										<TextButtonLogin>Login</TextButtonLogin>
+									</Button>
+								</ViewButton>
+							</Fragment>
+						)}
+					</Formik>
+				</Wrapper>
+			</KeyboardAvoidingView>
+		</ScrollView>
 	);
 }
