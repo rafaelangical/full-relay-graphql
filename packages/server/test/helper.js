@@ -39,21 +39,21 @@ export async function clearDatabase() {
 
 export async function disconnectMongoose() {
   await mongoose.disconnect();
-  mongoose.connections.forEach((connection) => {
+  mongoose.connections.forEach(connection => {
     const modelNames = Object.keys(connection.models);
 
-    modelNames.forEach((modelName) => {
+    modelNames.forEach(modelName => {
       delete connection.models[modelName];
     });
 
     const collectionNames = Object.keys(connection.collections);
-    collectionNames.forEach((collectionName) => {
+    collectionNames.forEach(collectionName => {
       delete connection.collections[collectionName];
     });
   });
 
   const modelSchemaNames = Object.keys(mongoose.modelSchemas);
-  modelSchemaNames.forEach((modelSchemaName) => {
+  modelSchemaNames.forEach(modelSchemaName => {
     delete mongoose.modelSchemas[modelSchemaName];
   });
 }
