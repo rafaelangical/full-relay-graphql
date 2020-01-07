@@ -1,3 +1,5 @@
+Link of demo https://drive.google.com/file/d/1sFRmj1rKs7GjcuImpSstGWmOAUTEFHlO/view
+
 # Based on Entria FullStack Playground
 ![supported version](https://badgen.net/badge/node/lts/green)
 
