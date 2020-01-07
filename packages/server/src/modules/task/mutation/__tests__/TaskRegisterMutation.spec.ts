@@ -23,7 +23,12 @@ it('should create a new task when parameters are valid', async () => {
         name: $name
         description: $description
       }) {
-        task
+        task {
+          name
+          description
+          _id
+          id
+        }
         error
       }
     }
@@ -37,6 +42,7 @@ it('should create a new task when parameters are valid', async () => {
   };
 
   const result = await graphql(schema, query, rootValue, context, variables);
+  console.log(result);
   expect(result.data.TaskRegister.task).not.toBe(null);
   expect(result.data.TaskRegister.error).toBe(null);
 
