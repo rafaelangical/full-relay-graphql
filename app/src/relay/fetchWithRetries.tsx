@@ -1,14 +1,14 @@
 import ExecutionEnvironment from './ExecuteEnvironment';
 
 export type InitWithRetries = {
-  body?: unknown,
-  cache?: string | null,
-  credentials?: string | null,
-  fetchTimeout?: number | null,
-  headers?: unknown,
-  method?: string | null,
-  mode?: string | null,
-  retryDelays?: Array<number> | null,
+  body?: unknown;
+  cache?: string | null;
+  credentials?: string | null;
+  fetchTimeout?: number | null;
+  headers?: unknown;
+  method?: string | null;
+  mode?: string | null;
+  retryDelays?: Array<number> | null;
 };
 
 const DEFAULT_TIMEOUT = 15000;
@@ -18,8 +18,11 @@ const DEFAULT_RETRIES = [1000, 3000];
  * Makes a POST request to the server with the given data as the payload.
  * Automatic retries are done based on the values in `retryDelays`.
  */
-function fetchWithRetries(uri: string, initWithRetries?: InitWithRetries | null): Promise<any> {
-  const { fetchTimeout, retryDelays, ...init } = initWithRetries || {};
+function fetchWithRetries(
+  uri: string,
+  initWithRetries?: InitWithRetries | null,
+): Promise<any> {
+  const {fetchTimeout, retryDelays, ...init} = initWithRetries || {};
   const _fetchTimeout = fetchTimeout != null ? fetchTimeout : DEFAULT_TIMEOUT;
   const _retryDelays = retryDelays != null ? retryDelays : DEFAULT_RETRIES;
 
@@ -43,7 +46,9 @@ function fetchWithRetries(uri: string, initWithRetries?: InitWithRetries | null)
           retryRequest();
         } else {
           reject(
-            new Error(`fetchWithRetries(): Failed to get response from server, tried ${requestsAttempted} times.`),
+            new Error(
+              `fetchWithRetries(): Failed to get response from server, tried ${requestsAttempted} times.`,
+            ),
           );
         }
       }, _fetchTimeout);

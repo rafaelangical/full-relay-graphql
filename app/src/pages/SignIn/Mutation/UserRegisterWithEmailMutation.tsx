@@ -1,33 +1,33 @@
-import { commitMutation, graphql } from 'react-relay';
-import { Environment } from '../../../relay';
+import {commitMutation, graphql} from 'react-relay';
+import {Environment} from '../../../relay';
 
 import {
-	UserRegisterWithEmailInput,
-	UserRegisterWithEmailMutationResponse
+  UserRegisterWithEmailInput,
+  UserRegisterWithEmailMutationResponse,
 } from './__generated__/UserRegisterWithEmailMutation.graphql';
 
 const mutation = graphql`
-	mutation UserRegisterWithEmailMutation($input: UserRegisterWithEmailInput!) {
-		UserRegisterWithEmail(input: $input) {
-			error
-			token
-		}
-	}
+  mutation UserRegisterWithEmailMutation($input: UserRegisterWithEmailInput!) {
+    UserRegisterWithEmail(input: $input) {
+      error
+      token
+    }
+  }
 `;
 
 function commit(
-	input: UserRegisterWithEmailInput,
-	onCompleted: (response: UserRegisterWithEmailMutationResponse) => void,
-	onError: (error: Error) => void
+  input: UserRegisterWithEmailInput,
+  onCompleted: (response: UserRegisterWithEmailMutationResponse) => void,
+  onError: (error: Error) => void,
 ) {
-	return commitMutation(Environment, {
-		mutation,
-		variables: {
-			input
-		},
-		onCompleted,
-		onError
-	});
+  return commitMutation(Environment, {
+    mutation,
+    variables: {
+      input,
+    },
+    onCompleted,
+    onError,
+  });
 }
 
-export default { commit };
+export default {commit};

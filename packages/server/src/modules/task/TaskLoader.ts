@@ -5,7 +5,7 @@ import { ConnectionArguments } from 'graphql-relay';
 import mongoose from 'mongoose';
 declare type ObjectId = mongoose.Schema.Types.ObjectId;
 
-import TaskModel, { ITask } from './TaskModel';
+import TaskModel, { ITask } from './TaskModel.ts';
 
 import { GraphQLContext } from '../../TypeDefinition';
 
@@ -45,6 +45,7 @@ export const load = async (context: GraphQLContext, id: string | Object | Object
 
 	let data;
 	try {
+		// eslint-disable-next-line
 		data = await context.dataloaders.TaskLoader.load(id as string);
 	} catch (err) {
 		return null;

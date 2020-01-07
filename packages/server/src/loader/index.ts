@@ -1,4 +1,4 @@
-import * as UserLoader from '../modules/user/UserLoader';
-import * as TaskLoader from '../modules/task/TaskLoader';
+import * as UserLoader from '../modules/user/UserLoader.ts';
+import * as TaskLoader from '../modules/task/TaskLoader.ts';
 
 export { UserLoader, TaskLoader };

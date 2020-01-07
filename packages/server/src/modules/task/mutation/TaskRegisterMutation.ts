@@ -1,48 +1,48 @@
-import { GraphQLString, GraphQLNonNull, GraphQLFloat, GraphQLInt, GraphQLObjectType } from 'graphql';
+import { GraphQLString, GraphQLNonNull } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
 
-import pubSub, { EVENTS } from '../../../pubSub';
+import pubSub, { EVENTS } from '../../../pubSub.ts';
 
-import TaskModel from '../TaskModel';
+import TaskModel from '../TaskModel.ts';
 
 export default mutationWithClientMutationId({
-	name: 'TaskRegister',
-	inputFields: {
-		name: {
-			type: new GraphQLNonNull(GraphQLString)
-		},
-		description: {
-			type: new GraphQLNonNull(GraphQLString)
-		}
-	},
-	mutateAndGetPayload: async ({ name, description }) => {
-		let task = await TaskModel.findOne({ name: name.toLowerCase() });
+  name: 'TaskRegister',
+  inputFields: {
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    description: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+  mutateAndGetPayload: async ({ name, description }) => {
+    let task = await TaskModel.findOne({ name: name.toLowerCase() });
 
-		if (task) {
-			return {
-				error: 'Task já cadastrada'
-			};
-		}
+    if (task) {
+      return {
+        error: 'Task já cadastrada',
+      };
+    }
 
-		task = new TaskModel({
-			name,
-			description
-		});
+    task = new TaskModel({
+      name,
+      description,
+    });
 
-		await task.save();
+    await task.save();
 
-		await pubSub.publish(EVENTS.TASK.ADDED, { TaskAdded: { task } });
+    await pubSub.publish(EVENTS.TASK.ADDED, { TaskAdded: { task } });
 
-		return task;
-	},
-	outputFields: {
-		task: {
-			type: GraphQLString,
-			resolve: ({ _id }) => _id
-		},
-		error: {
-			type: GraphQLString,
-			resolve: ({ error }) => error
-		}
-	}
+    return task;
+  },
+  outputFields: {
+    task: {
+      type: GraphQLString,
+      resolve: ({ _id }) => _id,
+    },
+    error: {
+      type: GraphQLString,
+      resolve: ({ error }) => error,
+    },
+  },
 });

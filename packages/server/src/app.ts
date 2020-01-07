@@ -5,20 +5,18 @@ import bodyParser from 'koa-bodyparser';
 import cors from 'kcors';
 // TODO: contribute to the package creating a TS definition
 // there is a definition inside index.d.ts but not working
-// @ts-ignore
 import graphqlHttp from 'koa-graphql';
 // TODO: contribute to the package creating a TS definition
-// @ts-ignore
 import graphqlBatchHttpWrapper from 'koa-graphql-batch';
 import logger from 'koa-logger';
 import Router from 'koa-router';
 import koaPlayground from 'graphql-playground-middleware-koa';
 import { GraphQLError } from 'graphql';
 
-import { schema } from './schema';
-import { getUser } from './auth';
-import * as loaders from './loader';
-import { Loaders } from './interface/NodeInterface';
+import { schema } from './schema.ts';
+import { getUser } from './auth.ts';
+import * as loaders from './loader/index.ts';
+import { Loaders } from './interface/NodeInterface.ts';
 
 const app = new Koa();
 const router = new Router();

@@ -1,5 +1,5 @@
-import TaskRegister from './TaskRegisterMutation';
+import TaskRegister from './TaskRegisterMutation.ts';
 
 export default {
-	TaskRegister
+  TaskRegister,
 };

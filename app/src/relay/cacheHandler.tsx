@@ -1,15 +1,17 @@
-
 import RelayQueryResponseCache from 'relay-runtime/lib/RelayQueryResponseCache.js';
 
-import  { Variables, UploadableMap, CacheConfig } from 'react-relay';
+import {Variables, UploadableMap, CacheConfig} from 'react-relay';
 
-import  { RequestNode } from 'relay-runtime';
+import {RequestNode} from 'relay-runtime';
 
 import fetchQuery from './fetchQuery';
-import { isMutation, isQuery, forceFetch } from './helpers';
+import {isMutation, isQuery, forceFetch} from './helpers';
 
 const oneMinute = 60 * 1000;
-const relayResponseCache = new RelayQueryResponseCache({ size: 250, ttl: oneMinute });
+const relayResponseCache = new RelayQueryResponseCache({
+  size: 250,
+  ttl: oneMinute,
+});
 
 const cacheHandler = async (
   request: RequestNode,

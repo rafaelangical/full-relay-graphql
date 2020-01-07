@@ -1,4 +1,4 @@
-import User from '../modules/user/UserModel';
-import Task from '../modules/task/TaskModel';
+import User from '../modules/user/UserModel.ts';
+import Task from '../modules/task/TaskModel.ts';
 
 export { User, Task };

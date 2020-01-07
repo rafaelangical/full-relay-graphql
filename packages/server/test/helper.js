@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 // @flow
 
 import mongoose from 'mongoose';
 
-import * as loaders from '../src/loader';
+import * as loaders from '../src/loader/index.ts';
 import * as _createRows from './createRows';
 
 export const createRows = _createRows;
@@ -26,13 +27,10 @@ const mongooseOptions = {
 
 export async function connectMongoose() {
   jest.setTimeout(20000);
-  return mongoose.connect(
-    global.__MONGO_URI__,
-    {
-      ...mongooseOptions,
-      dbName: global.__MONGO_DB_NAME__,
-    },
-  );
+  return mongoose.connect(global.__MONGO_URI__, {
+    ...mongooseOptions,
+    dbName: global.__MONGO_DB_NAME__,
+  });
 }
 
 export async function clearDatabase() {
@@ -128,7 +126,11 @@ function sanitizeValue(value: Object, field: ?string, keysToFreeze: string[]) {
  * Sanitize a test object removing the mentions of a `ObjectId` from Mongoose and also
  *  stringifying any other object into a valid, "snapshotable", representation.
  */
-export function sanitizeTestObject(payload: Object, keysToFreeze: string[] = ['id'], ignore: string[] = ['password']) {
+export function sanitizeTestObject(
+  payload: Object,
+  keysToFreeze: string[] = ['id'],
+  ignore: string[] = ['password'],
+) {
   return Object.keys(payload).reduce((sanitizedObj: Object, field: string) => {
     if (ignore.indexOf(field) !== -1) {
       return sanitizedObj;

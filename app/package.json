@@ -10,6 +10,7 @@
 		"devtools": "react-devtools",
 		"ios": "react-native run-ios",
 		"lint": "eslint src",
+		"lint:fix": "eslint --fix --ext .js,.ts,.tsx .",
 		"lint:staged": "lint-staged",
 		"relay": "relay-compiler --watchman false --src ./src --schema data/schema.graphql --language typescript",
 		"relay:watch": "yarn relay -- --watch",

@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 const { resolve } = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');

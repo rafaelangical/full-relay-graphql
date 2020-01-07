@@ -1,5 +1,5 @@
-import TaskAdded from './TaskAddedSubscription';
+import TaskAdded from './TaskAddedSubscription.ts';
 
 export default {
-	TaskAdded
+  TaskAdded,
 };

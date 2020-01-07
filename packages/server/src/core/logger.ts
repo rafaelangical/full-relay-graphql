@@ -1,6 +1,6 @@
 import winston from 'winston';
 
-import consoleFormatter from './logger/formatter/console';
+import consoleFormatter from './logger/formatter/console.ts';
 
 const { format } = winston;
 
@@ -20,7 +20,8 @@ const logger = winston.createLogger({
   ],
 });
 
-export const getConsoleTransport = (label: string) => new winston.transports.Console({
+export const getConsoleTransport = (label: string) =>
+  new winston.transports.Console({
   format: consoleFormatter({ label }),
 });
 

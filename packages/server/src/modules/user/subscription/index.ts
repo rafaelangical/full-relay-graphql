@@ -1,5 +1,5 @@
-import UserAdded from './UserAddedSubscription';
+import UserAdded from './UserAddedSubscription.ts';
 
 export default {
-	UserAdded
+  UserAdded,
 };

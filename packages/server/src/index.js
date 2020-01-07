@@ -5,12 +5,12 @@ import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 
-import app from './app';
-import logger, { getConsoleTransport } from './core/logger';
-import { connectDatabase } from './database';
-import { graphqlPort } from './config';
+import app from './app.ts';
+import logger, { getConsoleTransport } from './core/logger.ts';
+import { connectDatabase } from './database.ts';
+import { graphqlPort } from './config.ts';
 
-import { schema } from './schema';
+import { schema } from './schema.ts';
 
 logger.add(getConsoleTransport('graphql-main'));
 
@@ -30,8 +30,7 @@ logger.add(getConsoleTransport('graphql-main'));
 
   SubscriptionServer.create(
     {
-      onConnect: connectionParams =>
-        logger.info('Client subscription connected!', connectionParams),
+      onConnect: connectionParams => logger.info('Client subscription connected!', connectionParams),
       onDisconnect: () => logger.info('Client subscription disconnected!'),
       execute,
       subscribe,

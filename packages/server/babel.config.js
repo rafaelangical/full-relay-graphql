@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 const { workspaces = [] } = require('./package.json');
 
 module.exports = {

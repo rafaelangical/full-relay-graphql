@@ -4,12 +4,12 @@ import 'babel-polyfill';
 import REPL from 'repl';
 import replPromised from 'repl-promised';
 import history from 'repl.history';
+
+import { connectDatabase } from './src/database.ts';
+import * as M from './src/model/index.ts';
+import { generateToken } from './src/auth.ts';
 // import babel from 'babel-core';
 const babel = require('babel-core');
-
-import { connectDatabase } from './src/database';
-import * as M from './src/model';
-import { generateToken } from './src/auth';
 
 // based on https://gist.github.com/princejwesley/a66d514d86ea174270210561c44b71ba
 /**
@@ -20,20 +20,21 @@ import { generateToken } from './src/auth';
 function preprocess(input) {
   const awaitMatcher = /^(?:\s*(?:(?:let|var|const)\s)?\s*([^=]+)=\s*|^\s*)(await\s[\s\S]*)/;
   const asyncWrapper = (code, binder) => {
-    let assign = binder ? `global.${binder} = ` : '';
+    const assign = binder ? `global.${binder} = ` : '';
     return `(function(){ async function _wrap() { return ${assign}${code} } return _wrap();})()`;
   };
 
   // match & transform
   const match = input.match(awaitMatcher);
   if (match) {
-    input = `${asyncWrapper(match[2], match[1])}`;
+    // eslint-disable-next-line
+		input = `${asyncWrapper(match[2], match[1])}`;
   }
   return input;
 }
 
 function myEval(cmd, context, filename, callback) {
-  const code = babel.transform(preprocess(cmd), {
+  const { code } = babel.transform(preprocess(cmd), {
     presets: [
       'flow',
       [
@@ -46,8 +47,9 @@ function myEval(cmd, context, filename, callback) {
       ],
     ],
     plugins: [['babel-plugin-transform-flow-strip-types']],
-  }).code;
-  _eval(code, context, filename, callback);
+  });
+  // eslint-disable-next-line
+	_eval(code, context, filename, callback);
 }
 
 let _eval;

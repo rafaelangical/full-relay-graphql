@@ -1,8 +1,8 @@
 import { GraphQLObjectType } from 'graphql';
 import { offsetToCursor } from 'graphql-relay';
 
-import { UserConnection } from '../UserType';
-import pubSub, { EVENTS } from '../../../pubSub';
+import { UserConnection } from '../UserType.ts';
+import pubSub, { EVENTS } from '../../../pubSub.ts';
 
 const UserAddedPayloadType = new GraphQLObjectType({
   name: 'UserAddedPayload',

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { getUser, generateToken } from '../auth';
+import { getUser, generateToken } from '../auth.ts';
 
 import { connectMongoose, clearDbAndRestartCounters, disconnectMongoose, createRows } from '../../test/helper';
 

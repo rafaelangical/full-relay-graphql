@@ -19,11 +19,13 @@ const Wrapper = styled.TouchableOpacity`
 `;
 
 type Props = {
-	onPress?: (string) => void;
-	style?: object;
-	children?: Node;
+  onPress?: (string) => void;
+  style?: object;
+  children?: Node;
 };
 
-const Button = (props: Props) => <Wrapper onPress={() => props.onPress()}>{props.children}</Wrapper>;
+const Button = (props: Props) => (
+  <Wrapper onPress={() => props.onPress()}>{props.children}</Wrapper>
+);
 
 export default Button;

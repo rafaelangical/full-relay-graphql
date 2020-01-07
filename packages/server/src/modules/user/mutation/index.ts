@@ -1,7 +1,6 @@
-
-import UserChangePassword from './UserChangePasswordMutation';
-import UserLoginWithEmail from './UserLoginWithEmailMutation';
-import UserRegisterWithEmail from './UserRegisterWithEmailMutation';
+import UserChangePassword from './UserChangePasswordMutation.ts';
+import UserLoginWithEmail from './UserLoginWithEmailMutation.ts';
+import UserRegisterWithEmail from './UserRegisterWithEmailMutation.ts';
 
 export default {
   UserChangePassword,

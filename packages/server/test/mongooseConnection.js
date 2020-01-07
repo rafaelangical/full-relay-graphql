@@ -11,11 +11,13 @@ mongoose.connect(mongoUri, {
   reconnectInterval: 1000,
 });
 
-export const connection = mongoose.connection;
+export const { connection } = mongoose;
 
+// eslint-disable-next-line
 connection.on('error', e => {
   if (e.message.code === 'ETIMEDOUT') {
     console.log(e);
+    // eslint-disable-next-line
     mongoose.connect(mongoUri, opts);
   }
   console.log(e);

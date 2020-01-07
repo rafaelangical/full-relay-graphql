@@ -1,55 +1,49 @@
-declare module "koa-graphql" {
-  import { Context, Request, Response, Middleware } from "koa";
-  import {
-    GraphQLError,
-    GraphQLSchema,
-    GraphQLFieldResolver,
-    ValidationContext,
-    ASTVisitor
-  } from "graphql";
-  import { GraphQLParams, RequestInfo } from "express-graphql";
+// eslint-disable-next-line
+declare module 'koa-graphql' {
+	// eslint-disable-next-line
+	import { Context, Request, Response, Middleware } from 'koa';
+	import { GraphQLError, GraphQLSchema, GraphQLFieldResolver, ValidationContext, ASTVisitor } from 'graphql';
+	import { GraphQLParams, RequestInfo } from 'express-graphql';
 
-  export type Options =
-    | ((request: Request, repsonse: Response, ctx: Context) => OptionsResult)
-    | OptionsResult;
+	export type Options = ((request: Request, repsonse: Response, ctx: Context) => OptionsResult) | OptionsResult;
 
-  export type OptionsResult = OptionsData | Promise<OptionsData>;
+	export type OptionsResult = OptionsData | Promise<OptionsData>;
 
-  export type OptionsData = {
-    /**
+	export type OptionsData = {
+		/**
      * A GraphQL schema from graphql-js.
      */
-    schema: GraphQLSchema;
+		schema: GraphQLSchema;
 
-    /**
+		/**
      * A value to pass as the context to this middleware.
      */
-    context?: any;
+		context?: any;
 
-    /**
+		/**
      * An object to pass as the rootvalue to the graphql() function.
      */
-    rootValue?: any;
+		rootValue?: any;
 
-    /**
+		/**
      * A boolean to configure whether the output should be pretty-printed.
      */
-    pretty?: boolean;
+		pretty?: boolean;
 
-    /**
+		/**
      * An optional function which will be used to format any errors produced by
      * fulfilling a GraphQL operation. If no function is provided, GraphQL's
      * default spec-compliant `formatError` function will be used.
      */
-    formatError?: (error: GraphQLError, context?: any) => any;
+		formatError?: (error: GraphQLError, context?: any) => any;
 
-    /**
+		/**
      * An optional array of validation rules that will be applied on the document
      * in addition to those defined by the GraphQL spec.
      */
-    validationRules?: Array<(ValidationContext) => ASTVisitor>;
+		validationRules?: Array<(ValidationContext) => ASTVisitor>;
 
-    /**
+		/**
      * An optional function for adding additional metadata to the GraphQL response
      * as a key-value object. The result will be added to "extensions" field in
      * the resulting JSON. This is often a useful place to add development time
@@ -59,20 +53,20 @@ declare module "koa-graphql" {
      *
      * This function may be async.
      */
-    extensions?: (info: RequestInfo) => { [key: string]: any };
+		extensions?: (info: RequestInfo) => { [key: string]: any };
 
-    /**
+		/**
      * A boolean to optionally enable GraphiQL mode.
      */
-    graphiql?: boolean;
+		graphiql?: boolean;
 
-    /**
+		/**
      * A resolver function to use when one is not provided by the schema.
      * If not provided, the default field resolver is used (which looks for a
      * value or method on the source value with the field's name).
      */
-    fieldResolver?: GraphQLFieldResolver<any, any>;
-  };
+		fieldResolver?: GraphQLFieldResolver<any, any>;
+	};
 
-  export default function graphqlHTTP(options: Options): Middleware;
+	export default function graphqlHTTP(options: Options): Middleware;
 }

@@ -1,7 +1,7 @@
 import { graphql } from 'graphql';
 
-import UserModel from '../../UserModel';
-import { schema } from '../../../../schema';
+import UserModel from '../../UserModel.ts';
+import { schema } from '../../../../schema.ts';
 import {
   getContext,
   connectMongoose,
