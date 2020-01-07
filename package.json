@@ -37,6 +37,7 @@
 		"@types/koa-logger": "^3.1.0",
 		"@types/koa-router": "^7.0.31",
 		"@types/mongoose": "^5.2.11",
+		"@typescript-eslint/eslint-plugin": "^2.15.0",
 		"babel-core": "^7.0.0-bridge.0",
 		"babel-eslint": "^10.0.1",
 		"babel-jest": "^24.7.1",
@@ -48,10 +49,12 @@
 		"eslint-import-resolver-typescript": "^1.1.1",
 		"eslint-import-resolver-webpack": "^0.11.1",
 		"eslint-plugin-cypress": "^2.0.1",
+		"eslint-plugin-eslint-comments": "^3.1.2",
 		"eslint-plugin-flowtype": "^3.1.4",
 		"eslint-plugin-import": "^2.14.0",
 		"eslint-plugin-jsx-a11y": "^6.1.2",
 		"eslint-plugin-react": "^7.11.1",
+		"eslint-plugin-react-hooks": "^2.3.0",
 		"eslint-plugin-react-native": "^3.8.1",
 		"eslint-plugin-relay": "^1.3.1",
 		"flow-bin": "0.104.0",
@@ -98,7 +101,7 @@
 		"jest:lint": "jest --config jest-eslint.config.js",
 		"lint": "eslint --ext .js packages/**",
 		"lint:staged": "lint-staged",
-		"relay:app": "yarn workspace app relay",
+		"relay:app": "yarn workspace app relays",
 		"start": "yarn start:server & yarn start:web & yarn start:app & yarn start:restria",
 		"start:android": "yarn workspace app android",
 		"start:app": "yarn workspace app start",
@@ -116,6 +119,7 @@
 		]
 	},
 	"dependencies": {
-		"@babel/runtime": "^7.6.3"
+		"@babel/runtime": "^7.6.3",
+		"eslint-plugin-jest": "^23.3.0"
 	}
 }
