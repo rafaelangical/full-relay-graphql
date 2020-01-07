@@ -12,7 +12,7 @@ const { combine, timestamp, colorize, label } = winston.format;
 const pe = new PrettyError();
 
 // eslint-disable-next-line
-const consoleFormatter = format((info) => {
+const consoleFormatter = format(info => {
   const stringifiedRest = jsonStringify(
     Object.assign({}, info, {
       level: undefined,

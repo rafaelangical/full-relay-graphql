@@ -126,11 +126,7 @@ function sanitizeValue(value: Object, field: ?string, keysToFreeze: string[]) {
  * Sanitize a test object removing the mentions of a `ObjectId` from Mongoose and also
  *  stringifying any other object into a valid, "snapshotable", representation.
  */
-export function sanitizeTestObject(
-  payload: Object,
-  keysToFreeze: string[] = ['id'],
-  ignore: string[] = ['password'],
-) {
+export function sanitizeTestObject(payload: Object, keysToFreeze: string[] = ['id'], ignore: string[] = ['password']) {
   return Object.keys(payload).reduce((sanitizedObj: Object, field: string) => {
     if (ignore.indexOf(field) !== -1) {
       return sanitizedObj;

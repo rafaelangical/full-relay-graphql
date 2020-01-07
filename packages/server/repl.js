@@ -28,7 +28,7 @@ function preprocess(input) {
   const match = input.match(awaitMatcher);
   if (match) {
     // eslint-disable-next-line
-		input = `${asyncWrapper(match[2], match[1])}`;
+    input = `${asyncWrapper(match[2], match[1])}`;
   }
   return input;
 }
@@ -49,7 +49,7 @@ function myEval(cmd, context, filename, callback) {
     plugins: [['babel-plugin-transform-flow-strip-types']],
   });
   // eslint-disable-next-line
-	_eval(code, context, filename, callback);
+  _eval(code, context, filename, callback);
 }
 
 let _eval;
