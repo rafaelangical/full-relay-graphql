@@ -10,28 +10,28 @@ import TaskModel, { ITask } from './TaskModel.ts';
 import { GraphQLContext } from '../../TypeDefinition';
 
 export default class Task {
-	id: string;
+  id: string;
 
-	_id: Types.ObjectId;
+  _id: Types.ObjectId;
 
-	name: string;
+  name: string;
 
-	description: string | null | undefined;
+  description: string | null | undefined;
 
-	constructor(data: ITask) {
-		this.id = data._id;
-		this._id = data._id;
-		this.name = data.name;
-		this.description = data.description;
+  constructor(data: ITask) {
+    this.id = data._id;
+    this._id = data._id;
+    this.name = data.name;
+    this.description = data.description;
 
-		// contollers to send variables, example::::
+    // contollers to send variables, example::::
 
-		// you can only see your own email, and your active status
-		// if (user && user._id.equals(data._id)) {
-		// 	this.email = data.email;
-		// 	this.active = data.active;
-		// }
-	}
+    // you can only see your own email, and your active status
+    // if (user && user._id.equals(data._id)) {
+    // 	this.email = data.email;
+    // 	this.active = data.active;
+    // }
+  }
 }
 
 export const getLoader = () => new DataLoader((ids: ReadonlyArray<string>) => mongooseLoader(TaskModel, ids));
@@ -39,51 +39,51 @@ export const getLoader = () => new DataLoader((ids: ReadonlyArray<string>) => mo
 const viewerCanSee = () => true;
 
 export const load = async (context: GraphQLContext, id: string | Object | ObjectId): Promise<Task | null> => {
-	if (!id && typeof id !== 'string') {
-		return null;
-	}
+  if (!id && typeof id !== 'string') {
+    return null;
+  }
 
-	let data;
-	try {
-		// eslint-disable-next-line
-		data = await context.dataloaders.TaskLoader.load(id as string);
-	} catch (err) {
-		return null;
-	}
-	return viewerCanSee() ? new Task(data, context) : null;
+  let data;
+  try {
+    // eslint-disable-next-line
+    data = await context.dataloaders.TaskLoader.load(id as string);
+  } catch (err) {
+    return null;
+  }
+  return viewerCanSee() ? new Task(data, context) : null;
 };
 
 export const clearCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId) =>
-	dataloaders.TaskLoader.clear(id.toString());
+  dataloaders.TaskLoader.clear(id.toString());
 export const primeCache = ({ dataloaders }: GraphQLContext, id: Types.ObjectId, data: ITask) =>
-	dataloaders.TaskLoader.prime(id.toString(), data);
+  dataloaders.TaskLoader.prime(id.toString(), data);
 export const clearAndPrimeCache = (context: GraphQLContext, id: Types.ObjectId, data: ITask) =>
-	clearCache(context, id) && primeCache(context, id, data);
+  clearCache(context, id) && primeCache(context, id, data);
 
 type TaskArgs = ConnectionArguments & {
-	search?: string;
+  search?: string;
 };
 export const loadTasks = async (context: GraphQLContext, args: TaskArgs) => {
-	console.log('args');
-	// console.log(args.search);
-	console.log(args);
-	const where =
-		args.search !== undefined && args.search !== '' && args.search !== null
-			? { name: { $regex: new RegExp(`^${args.search}`, 'ig') } }
-			: {};
-	// const tasks = TaskModel.find({});
-	console.log('where');
-	console.log(where);
-	const tasks = TaskModel.find(where, { _id: 1 }).sort({ createdAt: -1 });
-	const test = TaskModel.find();
-	console.log('test');
-	// console.log(test);
-	console.log('tasks');
-	// console.log(tasks);
-	return connectionFromMongoCursor({
-		cursor: tasks,
-		context,
-		args,
-		loader: load
-	});
+  console.log('args');
+  // console.log(args.search);
+  console.log(args);
+  const where =
+    args.search !== undefined && args.search !== '' && args.search !== null
+      ? { name: { $regex: new RegExp(`^${args.search}`, 'ig') } }
+      : {};
+  // const tasks = TaskModel.find({});
+  console.log('where');
+  console.log(where);
+  const tasks = TaskModel.find(where, { _id: 1 }).sort({ createdAt: -1 });
+  const test = TaskModel.find();
+  console.log('test');
+  // console.log(test);
+  console.log('tasks');
+  // console.log(tasks);
+  return connectionFromMongoCursor({
+    cursor: tasks,
+    context,
+    args,
+    loader: load,
+  });
 };

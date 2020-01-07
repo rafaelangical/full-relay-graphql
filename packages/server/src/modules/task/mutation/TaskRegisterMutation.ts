@@ -1,9 +1,12 @@
 import { GraphQLString, GraphQLNonNull } from 'graphql';
-import { mutationWithClientMutationId } from 'graphql-relay';
+import { mutationWithClientMutationId, toGlobalId } from 'graphql-relay';
 
 import pubSub, { EVENTS } from '../../../pubSub.ts';
 
 import TaskModel from '../TaskModel.ts';
+
+import * as TaskLoader from '../TaskLoader.ts';
+import { TaskConnection } from '../TaskType.ts';
 
 export default mutationWithClientMutationId({
   name: 'TaskRegister',
@@ -37,8 +40,20 @@ export default mutationWithClientMutationId({
   },
   outputFields: {
     task: {
-      type: GraphQLString,
-      resolve: ({ _id }) => _id,
+      type: TaskConnection.edgeType,
+      resolve: async ({ id }, _, context) => {
+        const newTask = await TaskLoader.load(context, id);
+
+        // Returns null if no node was loaded
+        if (!newTask) {
+          return null;
+        }
+
+        return {
+          cursor: toGlobalId('Task', newTask._id),
+          node: newTask,
+        };
+      },
     },
     error: {
       type: GraphQLString,
